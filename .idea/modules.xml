@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/streamSound.iml" filepath="$PROJECT_DIR$/streamSound.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stream-sound.iml" filepath="$PROJECT_DIR$/stream-sound.iml" />
     </modules>
   </component>
 </project>
