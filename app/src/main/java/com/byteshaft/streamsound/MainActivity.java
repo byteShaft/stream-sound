@@ -7,7 +7,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.ListView;
 
+import com.byteshaft.streamsound.adapter.SongsAdapter;
 import com.byteshaft.streamsound.utils.AppGlobals;
 import com.byteshaft.streamsound.utils.Helpers;
 import com.google.gson.JsonArray;
@@ -17,24 +19,21 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Integer> songsIdsArray;
-    private HashMap<Integer, String> songsTitleHashMap;
-    private HashMap<Integer, String> streamUrls;
-    private HashMap<Integer, String> songDurationMap;
     private MediaPlayer mMediaPlayer;
     private ImageView mPlayerControl;
     private ProgressDialog mProgressDialog;
+    private ListView mListView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeAllDataSets();
+        mListView = (ListView) findViewById(R.id.song_list);
+        AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -95,13 +94,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initializeAllDataSets() {
-        songsIdsArray = new ArrayList<>();
-        songsTitleHashMap = new HashMap<>();
-        streamUrls = new HashMap<>();
-        songDurationMap = new HashMap<>();
-    }
-
     class GetSoundDetailsTask extends AsyncTask<String, String, ArrayList<Integer>> {
 
         @Override
@@ -130,31 +122,51 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(jsonArray);
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-                        if (!songsIdsArray.contains(jsonObject.get("id").getAsInt())) {
+                        if (!AppGlobals.getsSongsIdsArray().contains(jsonObject.get("id").getAsInt())) {
                             int currentSongId = jsonObject.get("id").getAsInt();
-                            songsIdsArray.add(currentSongId);
-                            songsTitleHashMap.put(currentSongId, jsonObject.get("title")
-                                    .getAsString());
-                            streamUrls.put(currentSongId, jsonObject.get("stream_url")
-                                    .getAsString());
-                            songDurationMap.put(currentSongId, jsonObject.get("duration")
-                                    .getAsString());
+                            AppGlobals.addSongId(currentSongId);
+                            if (!jsonObject.get("title").isJsonNull()) {
+                                AppGlobals.addTitleToHashMap(currentSongId, jsonObject.get("title")
+                                        .getAsString());
+                            }
+                            if (!jsonObject.get("stream_url").isJsonNull()) {
+                                AppGlobals.addStreamUrlsToHashMap(currentSongId, jsonObject.get("stream_url")
+                                        .getAsString());
+                            }
+                            if (!jsonObject.get("duration").isJsonNull()) {
+                                AppGlobals.addDurationHashMap(currentSongId, jsonObject.get("duration")
+                                        .getAsString());
+                            }
+                            if (!jsonObject.get("genre").isJsonNull()) {
+                                AppGlobals.addGenreHashMap(currentSongId, jsonObject.get("genre")
+                                        .getAsString());
+                            }
+                            if (!jsonObject.get("artwork_url").isJsonNull()) {
+                                AppGlobals.addSongImageUrlHashMap(currentSongId,
+                                        jsonObject.get("artwork_url").getAsString());
+                            }
+                            JsonObject jsonElements = jsonObject.get("user").getAsJsonObject();
+                            System.out.println(jsonElements.get("username").getAsString());
+                            if (!jsonElements.get("username").isJsonNull()) {
+                                AppGlobals.addSongArtistHashMap(currentSongId,
+                                        jsonElements.get("username").getAsString());
+                            }
                         }
 
                     }
-                    System.out.println(songsIdsArray);
-                    System.out.println(songsTitleHashMap);
-                    System.out.println(streamUrls);
-                    System.out.println(songDurationMap);
+
                 }
             }
-            return songsIdsArray;
+            return AppGlobals.getsSongsIdsArray();
         }
 
         @Override
         protected void onPostExecute(ArrayList<Integer> songIdsArray) {
             super.onPostExecute(songIdsArray);
             mProgressDialog.dismiss();
+            SongsAdapter songsAdapter = new SongsAdapter(getApplicationContext(),R.layout.single_row,
+                    songIdsArray, MainActivity.this);
+            mListView.setAdapter(songsAdapter);
         }
     }
 }
