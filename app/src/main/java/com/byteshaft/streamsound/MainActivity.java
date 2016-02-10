@@ -1,5 +1,6 @@
 package com.byteshaft.streamsound;
 
+import android.app.ProgressDialog;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<Integer, String> songDurationMap;
     private MediaPlayer mMediaPlayer;
     private ImageView mPlayerControl;
+    private ProgressDialog mProgressDialog;
 
 
     @Override
@@ -103,6 +105,16 @@ public class MainActivity extends AppCompatActivity {
     class GetSoundDetailsTask extends AsyncTask<String, String, String> {
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog.setMessage("loading ...");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+        }
+
+        @Override
         protected String doInBackground(String... params) {
             int responseCode = 0;
             if (Helpers.isNetworkAvailable() && Helpers.isInternetWorking()) {
@@ -139,6 +151,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            mProgressDialog.dismiss();
         }
     }
 }
