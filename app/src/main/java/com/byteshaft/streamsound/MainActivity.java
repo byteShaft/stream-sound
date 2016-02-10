@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         songDurationMap = new HashMap<>();
     }
 
-    class GetSoundDetailsTask extends AsyncTask<String, String, String> {
+    class GetSoundDetailsTask extends AsyncTask<String, String, ArrayList<Integer>> {
 
         @Override
         protected void onPreExecute() {
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected ArrayList<Integer> doInBackground(String... params) {
             int responseCode = 0;
             if (Helpers.isNetworkAvailable() && Helpers.isInternetWorking()) {
                 try {
@@ -147,15 +147,13 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(streamUrls);
                     System.out.println(songDurationMap);
                 }
-
-
             }
-            return null;
+            return songsIdsArray;
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(ArrayList<Integer> songIdsArray) {
+            super.onPostExecute(songIdsArray);
             mProgressDialog.dismiss();
         }
     }
