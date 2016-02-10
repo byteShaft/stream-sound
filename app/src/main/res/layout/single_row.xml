@@ -24,7 +24,7 @@
         android:id="@+id/artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
+        android:text="artist name"
         android:layout_alignTop="@+id/thumbnail"
         android:layout_toRightOf="@+id/thumbnail"
         android:textSize="@dimen/title"
@@ -61,4 +61,6 @@
         android:layout_alignRight="@+id/song_title"
         android:layout_alignEnd="@+id/song_title" />
 
+=======
+>>>>>>> upstream/master
 </RelativeLayout>
