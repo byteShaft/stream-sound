@@ -16,4 +16,36 @@
         android:layout_height="wrap_content">
     </ListView>
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:gravity="center" >
+
+        <ImageButton
+            android:id="@+id/btnPrevious"
+            android:src="@android:drawable/ic_media_previous"
+            android:paddingRight="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"/>
+
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:src="@drawable/ic_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"/>
+
+        <ImageButton
+            android:id="@+id/btnNext"
+            android:src="@android:drawable/ic_media_next"
+            android:paddingLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"/>
+    </LinearLayout>
+
 </RelativeLayout>
