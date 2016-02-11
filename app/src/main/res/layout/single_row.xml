@@ -61,6 +61,4 @@
         android:layout_alignRight="@+id/song_title"
         android:layout_alignEnd="@+id/song_title" />
 
-=======
->>>>>>> upstream/master
 </RelativeLayout>

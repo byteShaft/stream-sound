@@ -23,9 +23,13 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private MediaPlayer mMediaPlayer;
-    private ImageView mPlayerControl;
     private ProgressDialog mProgressDialog;
     private ListView mListView;
+
+    // media controls
+    private ImageView mPlayerControl;
+    private ImageView buttonNext;
+    private ImageView buttonPrevious;
 
 
     @Override
@@ -33,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.song_list);
+
+        /// Media Controls
+        mPlayerControl = (ImageView) findViewById(R.id.btnPlay);
+        buttonNext = (ImageView) findViewById(R.id.btnNext);
+        buttonPrevious = (ImageView) findViewById(R.id.btnPrevious);
+
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
         mMediaPlayer = new MediaPlayer();
