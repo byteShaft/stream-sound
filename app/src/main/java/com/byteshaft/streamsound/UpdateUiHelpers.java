@@ -54,6 +54,7 @@ public class UpdateUiHelpers extends ContextWrapper{
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
             mainActivity.seekBar.setIndeterminate(true);
+            mainActivity.bufferingTextView.setText("Buffering...");
         }
     }
 
@@ -61,6 +62,7 @@ public class UpdateUiHelpers extends ContextWrapper{
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
             mainActivity.seekBar.setIndeterminate(false);
+            mainActivity.bufferingTextView.setText("");
         }
     }
 
