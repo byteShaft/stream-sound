@@ -20,6 +20,9 @@ public class AppGlobals extends Application {
     public static final String USER_URL = "http://api.soundcloud.com/users/197638516/tracks.json?client_id=";
     public static final String CLIENT_KEY = "d15e89ac63aed800d452231a67207696";
     public static final String ADD_CLIENT_ID = "?client_id=";
+    public static final String SOUND_URL = "sound_url";
+    private static boolean sControlsVisible = false;
+    private static boolean sIsSongCompleted = false;
 
     @Override
     public void onCreate() {
@@ -95,5 +98,21 @@ public class AppGlobals extends Application {
 
     public static HashMap<Integer, String> getSongArtistHashMap() {
         return sArtistHashMap;
+    }
+
+    public static void setControlsVisible(boolean status) {
+        sControlsVisible = status;
+    }
+
+    public static boolean getControlsVisibility() {
+        return sControlsVisible;
+    }
+
+    public static void setSongCompleteStatus(boolean value) {
+        sIsSongCompleted = value;
+    }
+
+    public static boolean isSongCompleted() {
+        return sIsSongCompleted;
     }
 }

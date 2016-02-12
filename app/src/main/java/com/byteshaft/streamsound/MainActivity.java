@@ -1,9 +1,7 @@
 package com.byteshaft.streamsound;
 
 import android.app.ProgressDialog;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +12,10 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 
 import com.byteshaft.streamsound.adapter.SongsAdapter;
+import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
 import com.byteshaft.streamsound.utils.Helpers;
 import com.google.gson.JsonArray;
@@ -25,47 +25,60 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private MediaPlayer mMediaPlayer;
     private ProgressDialog mProgressDialog;
     private ListView mListView;
-    private ImageView mPlayerControl;
+    ImageView mPlayerControl;
     private ImageView buttonNext;
     private ImageView buttonPrevious;
-    private RelativeLayout controls_layout;
-    private boolean controlsVisible = false;
+    RelativeLayout controls_layout;
+    SeekBar seekBar;
+    private int songLength;
+    double updateValue;
+    private int songLengthInSeconds;
+    private static MainActivity sInstance;
+
+    public static MainActivity getInstance() {
+        return sInstance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sInstance = this;
         mListView = (ListView) findViewById(R.id.song_list);
         controls_layout = (RelativeLayout) findViewById(R.id.now_playing_controls_header);
         /// Media Controls
         mPlayerControl = (ImageView) findViewById(R.id.play_pause_button);
         buttonNext = (ImageView) findViewById(R.id.next_button);
         buttonPrevious = (ImageView) findViewById(R.id.previous_button);
-
+        seekBar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                togglePlayPause();
-                animateBottomUp();
-            }
-        });
-        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                animateBottomDown();
-                mPlayerControl.setImageResource(R.drawable.play_light);
-            }
-        });
+         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+             boolean seek = false;
+
+             @Override
+             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                 seek = fromUser;
+             }
+
+             @Override
+             public void onStartTrackingTouch(SeekBar seekBar) {
+             }
+
+             @Override
+             public void onStopTrackingTouch(SeekBar seekBar) {
+                 if (seek) {
+                     PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
+                     PlayService.sMediaPlayer.start();
+                 }
+             }
+         });
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -74,73 +87,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position))));
                 String formattedUrl = String.format("%s%s%s", url,
                         AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
-                new PlaySoundTask().execute(formattedUrl);
+                songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                        .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
+                songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
+                System.out.println(songLengthInSeconds);
+                updateValue = songLengthInSeconds / 100.00;
+                seekBar.setMax(songLengthInSeconds);
+                animateBottomUp();
+                UpdateUiHelpers.setSeekBarIndeterminate();
+                seekBar.setProgress(0);
+                AppGlobals.setSongCompleteStatus(false);
+                Intent intent = new Intent(getApplicationContext(), PlayService.class);
+                intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
+                startService(intent);
             }
         });
         mPlayerControl.setOnClickListener(this);
     }
 
-    private void animateBottomDown() {
+    public void animateBottomDown() {
         Animation bottomDown = AnimationUtils.loadAnimation(MainActivity.this,
                 R.anim.bottom_down);
         controls_layout.startAnimation(bottomDown);
         controls_layout.setVisibility(View.GONE);
-        controlsVisible = false;
-
+        AppGlobals.setControlsVisible(false);
     }
 
-    private void animateBottomUp() {
-        if (!controlsVisible) {
+    public void animateBottomUp() {
+        if (!AppGlobals.getControlsVisibility()) {
             Animation bottomUp = AnimationUtils.loadAnimation(MainActivity.this,
                     R.anim.bottom_up);
             controls_layout.startAnimation(bottomUp);
             controls_layout.setVisibility(View.VISIBLE);
-            controlsVisible = true;
+            AppGlobals.setControlsVisible(true);
         }
 
-    }
-
-    private void playSong(String formattedUrl) {
-        Uri uri = Uri.parse(formattedUrl);
-        if (mMediaPlayer.isPlaying()) {
-            mMediaPlayer.stop();
-            mMediaPlayer.reset();
-        }
-        try {
-            mMediaPlayer.setDataSource(formattedUrl);
-            mMediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void togglePlayPause() {
-        if (mMediaPlayer.isPlaying()) {
-            mMediaPlayer.pause();
-            mPlayerControl.setImageResource(R.drawable.play_light);
-        } else {
-            mMediaPlayer.start();
-            mPlayerControl.setImageResource(R.drawable.pause_light);
-        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
-            }
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.play_pause_button:
-                togglePlayPause();
+                PlayService.togglePlayPause();
                 break;
         }
     }
@@ -218,15 +212,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             SongsAdapter songsAdapter = new SongsAdapter(getApplicationContext(),R.layout.single_row,
                     songIdsArray, MainActivity.this);
             mListView.setAdapter(songsAdapter);
-        }
-    }
-
-    class PlaySoundTask extends AsyncTask<String, String, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            playSong(params[0]);
-            return null;
         }
     }
 }
