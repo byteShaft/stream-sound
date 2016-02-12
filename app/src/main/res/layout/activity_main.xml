@@ -15,7 +15,7 @@
 
     <RelativeLayout
         android:id="@+id/now_playing_controls_header"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -35,17 +35,16 @@
             android:thumb="@drawable/transparent_drawable"
             android:indeterminate="false" />
 
-        <ProgressBar
-            android:id="@+id/startingStreamProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:indeterminateOnly="true"
-            android:paddingTop="8.5dp"
-            android:paddingBottom="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:thumb="@drawable/transparent_drawable" />
+        <!--<ProgressBar-->
+            <!--android:id="@+id/startingStreamProgressBar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--style="?android:attr/progressBarStyleHorizontal"-->
+            <!--android:paddingTop="8.5dp"-->
+            <!--android:paddingBottom="10dp"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--android:thumb="@drawable/transparent_drawable" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
