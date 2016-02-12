@@ -43,10 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.song_list);
         /// Media Controls
-        mPlayerControl = (ImageView) findViewById(R.id.btnPlay);
-        buttonNext = (ImageView) findViewById(R.id.btnNext);
-        buttonPrevious = (ImageView) findViewById(R.id.btnPrevious);
-        controls_layout = (LinearLayout) findViewById(R.id.controls_layout);
+        mPlayerControl = (ImageView) findViewById(R.id.play_pause_button);
+        buttonNext = (ImageView) findViewById(R.id.next_button);
+        buttonPrevious = (ImageView) findViewById(R.id.previous_button);
 
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
@@ -62,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                mPlayerControl.setImageResource(android.R.drawable.ic_media_play);
                 animateBottomDown();
+                mPlayerControl.setImageResource(R.drawable.play_light);
             }
         });
 
@@ -117,10 +116,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void togglePlayPause() {
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
-            mPlayerControl.setImageResource(android.R.drawable.ic_media_play);
+            mPlayerControl.setImageResource(R.drawable.play_light);
         } else {
             mMediaPlayer.start();
-            mPlayerControl.setImageResource(android.R.drawable.ic_media_pause);
+            mPlayerControl.setImageResource(R.drawable.pause_light);
         }
     }
 
