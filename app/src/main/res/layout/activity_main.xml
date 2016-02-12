@@ -38,6 +38,7 @@
             android:id="@+id/buffering"
             android:textColor="@color/colorPrimary"
             android:layout_below="@id/nowPlayingSeekBar"
+            android:textSize="12sp"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
