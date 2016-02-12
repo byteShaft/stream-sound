@@ -15,9 +15,9 @@
 
     <RelativeLayout
         android:id="@+id/now_playing_controls_header"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:thumb="@drawable/transparent_drawable"
         android:background="@drawable/card_gridview_light" >
@@ -28,28 +28,24 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:progress="0"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="2dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:thumb="@drawable/transparent_drawable"
             android:indeterminate="false" />
-
-        <!--<ProgressBar-->
-            <!--android:id="@+id/startingStreamProgressBar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--style="?android:attr/progressBarStyleHorizontal"-->
-            <!--android:paddingTop="8.5dp"-->
-            <!--android:paddingBottom="10dp"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:layout_marginRight="20dp"-->
-            <!--android:thumb="@drawable/transparent_drawable" />-->
+        <TextView
+            android:id="@+id/buffering"
+            android:textColor="@color/colorPrimary"
+            android:layout_below="@id/nowPlayingSeekBar"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:layout_below="@+id/nowPlayingSeekBar"
+            android:layout_below="@+id/buffering"
             android:paddingBottom="15dp"
             android:orientation="horizontal" >
 

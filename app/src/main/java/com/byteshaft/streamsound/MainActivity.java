@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.byteshaft.streamsound.adapter.SongsAdapter;
 import com.byteshaft.streamsound.service.PlayService;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     double updateValue;
     private int songLengthInSeconds;
     private static MainActivity sInstance;
+    TextView bufferingTextView;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonNext = (ImageView) findViewById(R.id.next_button);
         buttonPrevious = (ImageView) findViewById(R.id.previous_button);
         seekBar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
+        bufferingTextView = (TextView) findViewById(R.id.buffering);
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
          seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
