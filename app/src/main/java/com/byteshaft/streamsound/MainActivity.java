@@ -12,8 +12,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.byteshaft.streamsound.adapter.SongsAdapter;
 import com.byteshaft.streamsound.utils.AppGlobals;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mPlayerControl;
     private ImageView buttonNext;
     private ImageView buttonPrevious;
-    private LinearLayout controls_layout;
+    private RelativeLayout controls_layout;
     private boolean controlsVisible = false;
 
     @Override
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.song_list);
+        controls_layout = (RelativeLayout) findViewById(R.id.now_playing_controls_header);
         /// Media Controls
         mPlayerControl = (ImageView) findViewById(R.id.play_pause_button);
         buttonNext = (ImageView) findViewById(R.id.next_button);
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnPlay:
+            case R.id.play_pause_button:
                 togglePlayPause();
                 break;
         }

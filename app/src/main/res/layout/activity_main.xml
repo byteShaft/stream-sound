@@ -15,6 +15,7 @@
 
     <RelativeLayout
         android:id="@+id/now_playing_controls_header"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
