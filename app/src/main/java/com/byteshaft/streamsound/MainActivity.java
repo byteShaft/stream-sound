@@ -105,14 +105,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPlayerControl.setOnClickListener(this);
     }
 
-    public void animateBottomDown() {
-        Animation bottomDown = AnimationUtils.loadAnimation(MainActivity.this,
-                R.anim.bottom_down);
-        controls_layout.startAnimation(bottomDown);
-        controls_layout.setVisibility(View.GONE);
-        AppGlobals.setControlsVisible(false);
-    }
-
     public void animateBottomUp() {
         if (!AppGlobals.getControlsVisibility()) {
             Animation bottomUp = AnimationUtils.loadAnimation(MainActivity.this,
