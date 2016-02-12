@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/list_row_selector"
-    android:padding="8dp" >
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/songId"
@@ -16,7 +15,6 @@
         android:id="@+id/thumbnail"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@mipmap/ic_launcher"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="8dp" />
 
@@ -27,7 +25,6 @@
         android:text="artist name"
         android:layout_alignTop="@+id/thumbnail"
         android:layout_toRightOf="@+id/thumbnail"
-        android:textSize="@dimen/title"
         android:textStyle="bold" />
 
     <TextView
@@ -37,8 +34,7 @@
         android:textColor="@android:color/black"
         android:layout_below="@id/artist"
         android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:textSize="@dimen/rating" />
+        android:layout_toRightOf="@+id/thumbnail"/>
 
     <TextView
         android:id="@+id/genre"
@@ -47,8 +43,7 @@
         android:layout_below="@id/song_title"
         android:layout_marginTop="5dp"
         android:layout_toRightOf="@+id/thumbnail"
-        android:textColor="@color/genre"
-        android:textSize="@dimen/genre" />
+        android:textColor="@color/genre"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -61,6 +56,4 @@
         android:layout_alignRight="@+id/song_title"
         android:layout_alignEnd="@+id/song_title" />
 
-=======
->>>>>>> upstream/master
 </RelativeLayout>
