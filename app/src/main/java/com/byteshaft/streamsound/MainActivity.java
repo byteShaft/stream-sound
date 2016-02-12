@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MediaPlayer mMediaPlayer;
     private ProgressDialog mProgressDialog;
     private ListView mListView;
-
     private ImageView mPlayerControl;
     private ImageView buttonNext;
     private ImageView buttonPrevious;
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonNext = (ImageView) findViewById(R.id.btnNext);
         buttonPrevious = (ImageView) findViewById(R.id.btnPrevious);
         controls_layout = (LinearLayout) findViewById(R.id.controls_layout);
+
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
         mMediaPlayer = new MediaPlayer();
