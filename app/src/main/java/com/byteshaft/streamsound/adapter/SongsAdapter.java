@@ -14,7 +14,6 @@ import com.byteshaft.streamsound.utils.AppGlobals;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class SongsAdapter extends ArrayAdapter {
 
@@ -27,7 +26,6 @@ public class SongsAdapter extends ArrayAdapter {
     public SongsAdapter(Context context, int resource, ArrayList<Integer> songsList,
                         Activity activity) {
         super(context, resource, songsList);
-        layoutResource = resource;
         this.songsList = songsList;
         mContext = context;
         mActivity = activity;
@@ -54,16 +52,10 @@ public class SongsAdapter extends ArrayAdapter {
             holder.artist.setText(AppGlobals.getSongArtistHashMap().get(songsList.get(position)));
         }
         if (AppGlobals.getDurationHashMap().containsKey(songsList.get(position))) {
-            long minutes = TimeUnit.MILLISECONDS.
-                    toMinutes(Long.parseLong(AppGlobals.getDurationHashMap().get(songsList.get(position))));
-            long seconds = TimeUnit.MILLISECONDS.
-                    toSeconds(Long.parseLong(AppGlobals.getDurationHashMap().get(songsList.get(position))));
-            holder.duration.setText(minutes +":"+ seconds);
-            System.out.println(TimeUnit.MILLISECONDS.
-                    toMinutes(Long.parseLong(AppGlobals.getDurationHashMap().get(songsList.get(position)))));
-            System.out.println(TimeUnit.MILLISECONDS.
-                    toSeconds(Long.parseLong(AppGlobals.getDurationHashMap().get(songsList.get(position)))));
-
+            int milliseconds = Integer.valueOf(AppGlobals.getDurationHashMap().get(songsList.get(position)));
+            int sec =  (milliseconds / 1000) % 60 ;
+            int min =  ((milliseconds / (1000*60)) % 60);
+            holder.duration.setText(min + ":" + sec);
         }
         if (AppGlobals.getTitlesHashMap().containsKey(songsList.get(position))) {
             holder.title.setText(AppGlobals.getTitlesHashMap().get(songsList.get(position)));
@@ -86,6 +78,4 @@ public class SongsAdapter extends ArrayAdapter {
         public TextView genre;
         public TextView duration;
     }
-
-
 }

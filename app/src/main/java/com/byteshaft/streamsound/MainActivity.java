@@ -3,11 +3,17 @@ package com.byteshaft.streamsound;
 import android.app.ProgressDialog;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.byteshaft.streamsound.adapter.SongsAdapter;
 import com.byteshaft.streamsound.utils.AppGlobals;
@@ -20,24 +26,23 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private MediaPlayer mMediaPlayer;
     private ProgressDialog mProgressDialog;
     private ListView mListView;
-
-    // media controls
     private ImageView mPlayerControl;
     private ImageView buttonNext;
     private ImageView buttonPrevious;
-
+    private RelativeLayout controls_layout;
+    private boolean controlsVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.song_list);
-
+        controls_layout = (RelativeLayout) findViewById(R.id.now_playing_controls_header);
         /// Media Controls
         mPlayerControl = (ImageView) findViewById(R.id.play_pause_button);
         buttonNext = (ImageView) findViewById(R.id.next_button);
@@ -51,34 +56,62 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 togglePlayPause();
+                animateBottomUp();
             }
         });
-
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                animateBottomDown();
                 mPlayerControl.setImageResource(R.drawable.play_light);
             }
         });
 
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (mMediaPlayer.isPlaying()) {
-//                    mMediaPlayer.stop();
-//                    mMediaPlayer.reset();
-//                }
-//                try {
-//                    mMediaPlayer.setDataSource(streamUrls.get(songsIdsArray.get(position)));
-//                    mMediaPlayer.prepareAsync();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }
-//        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String url = AppGlobals.getStreamUrlsHashMap().
+                        get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position))));
+                String formattedUrl = String.format("%s%s%s", url,
+                        AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+                new PlaySoundTask().execute(formattedUrl);
+            }
+        });
+        mPlayerControl.setOnClickListener(this);
+    }
 
+    private void animateBottomDown() {
+        Animation bottomDown = AnimationUtils.loadAnimation(MainActivity.this,
+                R.anim.bottom_down);
+        controls_layout.startAnimation(bottomDown);
+        controls_layout.setVisibility(View.GONE);
+        controlsVisible = false;
+
+    }
+
+    private void animateBottomUp() {
+        if (!controlsVisible) {
+            Animation bottomUp = AnimationUtils.loadAnimation(MainActivity.this,
+                    R.anim.bottom_up);
+            controls_layout.startAnimation(bottomUp);
+            controls_layout.setVisibility(View.VISIBLE);
+            controlsVisible = true;
+        }
+
+    }
+
+    private void playSong(String formattedUrl) {
+        Uri uri = Uri.parse(formattedUrl);
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+            mMediaPlayer.reset();
+        }
+        try {
+            mMediaPlayer.setDataSource(formattedUrl);
+            mMediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void togglePlayPause() {
@@ -94,13 +127,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         if (mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
             }
             mMediaPlayer.release();
             mMediaPlayer = null;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.play_pause_button:
+                togglePlayPause();
+                break;
         }
     }
 
@@ -179,5 +220,13 @@ public class MainActivity extends AppCompatActivity {
             mListView.setAdapter(songsAdapter);
         }
     }
-}
 
+    class PlaySoundTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            playSong(params[0]);
+            return null;
+        }
+    }
+}
