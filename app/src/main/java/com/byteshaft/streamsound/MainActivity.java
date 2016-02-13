@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonPrevious = (ImageView) findViewById(R.id.previous_button);
         seekBar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
         bufferingTextView = (TextView) findViewById(R.id.buffering);
+        buttonNext.setOnClickListener(this);
+        buttonPrevious.setOnClickListener(this);
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
          seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -90,28 +92,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position))));
                 String formattedUrl = String.format("%s%s%s", url,
                         AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+                AppGlobals.setCurrentPlayingSong((Integer) parent.getItemAtPosition(position));
                 seekBar.setProgress(0);
-                if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
-                    PlayService.sMediaPlayer.stop();
-                    PlayService.sMediaPlayer.reset();
-                    UpdateUiHelpers.updateUiOnCompletion();
-                    PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
-                }
                 songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                         .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
-                songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
-                System.out.println(songLengthInSeconds);
-                updateValue = songLengthInSeconds / 100;
-                seekBar.setMax(songLengthInSeconds);
-                animateBottomUp();
-                UpdateUiHelpers.setSeekBarIndeterminate();
-                AppGlobals.setSongCompleteStatus(false);
-                Intent intent = new Intent(getApplicationContext(), PlayService.class);
-                intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
-                startService(intent);
+                playSong(formattedUrl);
             }
         });
         mPlayerControl.setOnClickListener(this);
+    }
+
+    private void playSong(String formattedUrl) {
+        if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
+            PlayService.sMediaPlayer.stop();
+            PlayService.sMediaPlayer.reset();
+            UpdateUiHelpers.updateUiOnCompletion();
+            PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
+        }
+        songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
+        System.out.println(songLengthInSeconds);
+        updateValue = songLengthInSeconds / 100;
+        seekBar.setMax(songLengthInSeconds);
+        animateBottomUp();
+        UpdateUiHelpers.setSeekBarIndeterminate();
+        AppGlobals.setSongCompleteStatus(false);
+        Intent intent = new Intent(getApplicationContext(), PlayService.class);
+        intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
+        startService(intent);
     }
 
     public void animateBottomUp() {
@@ -137,11 +144,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.play_pause_button:
                 PlayService.togglePlayPause();
                 break;
+            case R.id.next_button:
+                int nextSOngIndex = (AppGlobals.getsSongsIdsArray()
+                        .indexOf(AppGlobals.getCurrentPlayingSong())) +1;
+                System.out.println(nextSOngIndex);
+                if (nextSOngIndex < AppGlobals.getsSongsIdsArray().size()) {
+                    seekBar.setProgress(0);
+                    int songId = AppGlobals.getsSongsIdsArray().get(nextSOngIndex);
+                    songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                            .get(songId));
+                    String url = AppGlobals.getStreamUrlsHashMap().
+                            get(songId);
+                    String formattedUrl = getFormattedUrl(url);
+                    playSong(formattedUrl);
+                }
+                break;
+            case R.id.previous_button:
+                int previousSOngIndex = (AppGlobals.getsSongsIdsArray()
+                        .indexOf(AppGlobals.getCurrentPlayingSong())) -1;
+                System.out.println(previousSOngIndex);
+                if (previousSOngIndex != -1) {
+                    seekBar.setProgress(0);
+                    int songId = AppGlobals.getsSongsIdsArray().get(previousSOngIndex);
+                    songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                            .get(songId));
+                    String url = AppGlobals.getStreamUrlsHashMap().
+                            get(songId);
+                    String formattedUrl = getFormattedUrl(url);
+                    playSong(formattedUrl);
+                }
+                break;
         }
     }
 
+    private String getFormattedUrl(String url) {
+        return String.format("%s%s%s", url,
+                AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+    }
     class GetSoundDetailsTask extends AsyncTask<String, String, ArrayList<Integer>> {
 
+        private boolean noInternet = false;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -156,52 +198,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected ArrayList<Integer> doInBackground(String... params) {
             int responseCode = 0;
             if (Helpers.isNetworkAvailable() && Helpers.isInternetWorking()) {
-                try {
-                    responseCode = Helpers.getRequest(AppGlobals.USER_URL + AppGlobals.CLIENT_KEY);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                JsonParser jsonParser = new JsonParser();
+                if (!Helpers.userIdStatus()) {
+                    int urlReply;
+                    try {
+                        urlReply = Helpers.getRequest(AppGlobals.apiUrl);
+                        if (urlReply == 302) {
+                            System.out.println(Helpers.getParsedString());
+                            JsonObject jsonObj = jsonParser.parse(Helpers.getParsedString())
+                                    .getAsJsonObject();
+                            if (!jsonObj.get("location").isJsonNull()) {
+                                System.out.println(jsonObj.get("location"));
+                                String resultUrl = jsonObj.get("location").getAsString();
+                                urlReply = Helpers.getRequest(resultUrl);
+                                if (urlReply == HttpURLConnection.HTTP_OK) {
+                                    JsonObject json = jsonParser.parse(Helpers.getParsedString())
+                                            .getAsJsonObject();
+                                    System.out.println(json.get("id"));
+                                    Helpers.userId(json.get("id").getAsString());
+                                    Helpers.userIdAcquired(true);
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    JsonParser jsonParser = new JsonParser();
-                    JsonArray jsonArray = jsonParser.parse(Helpers.getParsedString())
-                            .getAsJsonArray();
-                    System.out.println(jsonArray);
-                    for (int i = 0; i < jsonArray.size(); i++) {
-                        JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
-                        if (!AppGlobals.getsSongsIdsArray().contains(jsonObject.get("id").getAsInt())) {
-                            int currentSongId = jsonObject.get("id").getAsInt();
-                            AppGlobals.addSongId(currentSongId);
-                            if (!jsonObject.get("title").isJsonNull()) {
-                                AppGlobals.addTitleToHashMap(currentSongId, jsonObject.get("title")
-                                        .getAsString());
+                System.out.println(Helpers.getUserId());
+                    try {
+                        String targetUrl = String.format("http://api.soundcloud.com/users/" +
+                                "%s/tracks.json?client_id=%s", Helpers.getUserId(),
+                                AppGlobals.CLIENT_KEY);
+                        responseCode = Helpers.getRequest(targetUrl);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        JsonArray jsonArray = jsonParser.parse(Helpers.getParsedString())
+                                .getAsJsonArray();
+                        System.out.println(jsonArray);
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
+                            if (!AppGlobals.getsSongsIdsArray().contains(jsonObject.get("id").getAsInt())) {
+                                int currentSongId = jsonObject.get("id").getAsInt();
+                                AppGlobals.addSongId(currentSongId);
+                                if (!jsonObject.get("title").isJsonNull()) {
+                                    AppGlobals.addTitleToHashMap(currentSongId, jsonObject.get("title")
+                                            .getAsString());
+                                }
+                                if (!jsonObject.get("stream_url").isJsonNull()) {
+                                    AppGlobals.addStreamUrlsToHashMap(currentSongId, jsonObject.get("stream_url")
+                                            .getAsString());
+                                }
+                                if (!jsonObject.get("duration").isJsonNull()) {
+                                    AppGlobals.addDurationHashMap(currentSongId, jsonObject.get("duration")
+                                            .getAsString());
+                                }
+                                if (!jsonObject.get("genre").isJsonNull()) {
+                                    AppGlobals.addGenreHashMap(currentSongId, jsonObject.get("genre")
+                                            .getAsString());
+                                }
+                                if (!jsonObject.get("artwork_url").isJsonNull()) {
+                                    AppGlobals.addSongImageUrlHashMap(currentSongId,
+                                            jsonObject.get("artwork_url").getAsString());
+                                }
+                                JsonObject jsonElements = jsonObject.get("user").getAsJsonObject();
+                                if (!jsonElements.get("username").isJsonNull()) {
+                                    AppGlobals.addSongArtistHashMap(currentSongId,
+                                            jsonElements.get("username").getAsString());
+                                }
                             }
-                            if (!jsonObject.get("stream_url").isJsonNull()) {
-                                AppGlobals.addStreamUrlsToHashMap(currentSongId, jsonObject.get("stream_url")
-                                        .getAsString());
-                            }
-                            if (!jsonObject.get("duration").isJsonNull()) {
-                                AppGlobals.addDurationHashMap(currentSongId, jsonObject.get("duration")
-                                        .getAsString());
-                            }
-                            if (!jsonObject.get("genre").isJsonNull()) {
-                                AppGlobals.addGenreHashMap(currentSongId, jsonObject.get("genre")
-                                        .getAsString());
-                            }
-                            if (!jsonObject.get("artwork_url").isJsonNull()) {
-                                AppGlobals.addSongImageUrlHashMap(currentSongId,
-                                        jsonObject.get("artwork_url").getAsString());
-                            }
-                            JsonObject jsonElements = jsonObject.get("user").getAsJsonObject();
-                            System.out.println(jsonElements.get("username").getAsString());
-                            if (!jsonElements.get("username").isJsonNull()) {
-                                AppGlobals.addSongArtistHashMap(currentSongId,
-                                        jsonElements.get("username").getAsString());
-                            }
+
                         }
 
                     }
-
-                }
+            }else {
+                noInternet = true;
             }
             return AppGlobals.getsSongsIdsArray();
         }
@@ -209,10 +281,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(ArrayList<Integer> songIdsArray) {
             super.onPostExecute(songIdsArray);
+            if (noInternet) {
+                Helpers.alertDialog(MainActivity.this, "No Internet", "No internet");
+            }
             mProgressDialog.dismiss();
             SongsAdapter songsAdapter = new SongsAdapter(getApplicationContext(),R.layout.single_row,
                     songIdsArray, MainActivity.this);
             mListView.setAdapter(songsAdapter);
+            if (AppGlobals.getsSongsIdsArray().size() > 0) {
+                AppGlobals.setCurrentPlayingSong(AppGlobals.getsSongsIdsArray().get(0));
+            }
         }
     }
 }
