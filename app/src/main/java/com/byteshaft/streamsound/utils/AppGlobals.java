@@ -11,7 +11,6 @@ import java.util.HashMap;
 public class AppGlobals extends Application {
 
     public static final String USER_NAME = String.valueOf(R.string.user_name);
-
     private static ArrayList<Integer> sSongsIdsArray;
     private static HashMap<Integer, String> sSongsTitleHashMap;
     private static HashMap<Integer, String> sStreamUrls;
@@ -28,8 +27,7 @@ public class AppGlobals extends Application {
     private static boolean sIsSongCompleted = false;
     private static int sCurrentPlayingSong = 0;
     public static final String KEY_USER_ID_STATUS = "user_id";
-    public static final String apiUrl = String.format("http://api.soundcloud.com/resolve.json?url=" +
-            "https://soundcloud.com/%s&client_id=d15e89ac63aed800d452231a67207696", USER_NAME);
+    public static String apiUrl;
     public static final String KEY_ID = "user";
     private static String nextUrl = "";
 
@@ -37,6 +35,8 @@ public class AppGlobals extends Application {
     public void onCreate() {
         super.onCreate();
         sContext = getApplicationContext();
+        apiUrl = String.format("http://api.soundcloud.com/resolve.json?url=" +
+                "https://soundcloud.com/%s&client_id=d15e89ac63aed800d452231a67207696", "pti-social-media");
     }
 
     public static Context getContext() {

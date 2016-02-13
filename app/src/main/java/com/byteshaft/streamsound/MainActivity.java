@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!Helpers.userIdStatus()) {
                     int urlReply;
                     try {
+                        System.out.println(AppGlobals.apiUrl);
                         urlReply = Helpers.getRequest(AppGlobals.apiUrl);
                         System.out.println(urlReply);
                         if (urlReply == 302) {
