@@ -63,6 +63,7 @@ public class SongsAdapter extends ArrayAdapter {
             holder.genre.setText(AppGlobals.getGenreHashMap().get(songsList.get(position)));
         }
         if (AppGlobals.getSongImageUrlHashMap().containsKey(songsList.get(position))) {
+            Picasso.with(mActivity).cancelRequest(holder.thumbNail);
             Picasso.with(mActivity).load(AppGlobals.getSongImageUrlHashMap()
                     .get(songsList.get(position))).into(holder.thumbNail);
         }
