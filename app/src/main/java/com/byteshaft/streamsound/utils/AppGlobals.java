@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 public class AppGlobals extends Application {
 
+    public static String USER_NAME = "pti-social-media";
     private static ArrayList<Integer> sSongsIdsArray;
     private static HashMap<Integer, String> sSongsTitleHashMap;
     private static HashMap<Integer, String> sStreamUrls;
@@ -19,17 +20,23 @@ public class AppGlobals extends Application {
     final static int NOTIFICATION_ID = 404;
 
     private static Context sContext;
-    public static final String USER_URL = "http://api.soundcloud.com/users/197638516/tracks.json?client_id=";
     public static final String CLIENT_KEY = "d15e89ac63aed800d452231a67207696";
     public static final String ADD_CLIENT_ID = "?client_id=";
     public static final String SOUND_URL = "sound_url";
     private static boolean sControlsVisible = false;
     private static boolean sIsSongCompleted = false;
+    private static int sCurrentPlayingSong = 0;
+    public static final String KEY_USER_ID_STATUS = "user_id";
+    public static String apiUrl;
+    public static final String KEY_ID = "user";
+    private static String nextUrl = "";
 
     @Override
     public void onCreate() {
         super.onCreate();
         sContext = getApplicationContext();
+        apiUrl = String.format("http://api.soundcloud.com/resolve.json?url=" +
+                "https://soundcloud.com/%s&client_id=d15e89ac63aed800d452231a67207696", USER_NAME);
     }
 
     public static Context getContext() {
@@ -116,5 +123,21 @@ public class AppGlobals extends Application {
 
     public static boolean isSongCompleted() {
         return sIsSongCompleted;
+    }
+
+    public static void setCurrentPlayingSong(int currentSong) {
+        sCurrentPlayingSong = currentSong;
+    }
+
+    public static int getCurrentPlayingSong() {
+        return sCurrentPlayingSong;
+    }
+
+    public static void setNextUrl(String url) {
+        nextUrl = url;
+    }
+
+    public static String getNextUrl() {
+        return nextUrl;
     }
 }

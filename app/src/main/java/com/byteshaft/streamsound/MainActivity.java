@@ -2,12 +2,15 @@ package com.byteshaft.streamsound;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,6 +45,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int songLengthInSeconds;
     private static MainActivity sInstance;
     TextView bufferingTextView;
+    private int preLast;
+    private boolean loadMoreRunning = false;
+    private boolean hiddenByRefresh = false;
+    private int mLastFirstVisibleItem;
+    private boolean scrollingUp = false;
+    public boolean controlsDownByScroll = false;
+    public SongsAdapter songsAdapter;
+    private AudioManager audioManager;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -51,8 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        audioManager = (AudioManager) AppGlobals.getContext().getSystemService(AUDIO_SERVICE);
         sInstance = this;
         mListView = (ListView) findViewById(R.id.song_list);
+        mListView.setSmoothScrollbarEnabled(true);
         controls_layout = (RelativeLayout) findViewById(R.id.now_playing_controls_header);
         /// Media Controls
         mPlayerControl = (ImageView) findViewById(R.id.play_pause_button);
@@ -60,28 +73,86 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonPrevious = (ImageView) findViewById(R.id.previous_button);
         seekBar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
         bufferingTextView = (TextView) findViewById(R.id.buffering);
+        buttonNext.setOnClickListener(this);
+        buttonPrevious.setOnClickListener(this);
         AppGlobals.initializeAllDataSets();
         new GetSoundDetailsTask().execute();
-         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-             boolean seek = false;
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            boolean seek = false;
 
-             @Override
-             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                 seek = fromUser;
-             }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seek = fromUser;
+            }
 
-             @Override
-             public void onStartTrackingTouch(SeekBar seekBar) {
-             }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
-             @Override
-             public void onStopTrackingTouch(SeekBar seekBar) {
-                 if (seek) {
-                     PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
-                     PlayService.sMediaPlayer.start();
-                 }
-             }
-         });
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (seek) {
+                    PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
+                    PlayService.sMediaPlayer.start();
+                }
+            }
+        });
+
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                final ListView lw = mListView;
+
+                if (view.getId() == lw.getId()) {
+                    final int currentFirstVisibleItem = lw.getFirstVisiblePosition();
+
+                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                        scrollingUp = false;
+                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                        scrollingUp = true;
+                        if (controlsDownByScroll) {
+                            if (PlayService.sMediaPlayer != null &&
+                                    PlayService.sMediaPlayer.isPlaying() && audioManager.isMusicActive()) {
+                                animateBottomUp();
+                                controlsDownByScroll = false;
+                            }
+                        }
+                    }
+                    mLastFirstVisibleItem = currentFirstVisibleItem;
+                }
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                switch (view.getId()) {
+                    case R.id.song_list:
+                        final int lastItem = firstVisibleItem + visibleItemCount;
+                        if (lastItem == totalItemCount) {
+                            if (preLast != lastItem && !loadMoreRunning) { //to avoid multiple calls for last item
+                                Log.d("Last", "Last");
+                                preLast = lastItem;
+                                loadMoreRunning = true;
+                                if (!AppGlobals.getNextUrl().trim().isEmpty()) {
+                                    new GetSoundDetailsTask().execute();
+                                    if (AppGlobals.getControlsVisibility()) {
+                                        animateControlsDown();
+                                        hiddenByRefresh = true;
+                                    }
+                                }
+                            }
+                        } else if (lastItem == (totalItemCount - 1)) {
+                            System.out.println("scrollingUp" + scrollingUp);
+                            if (!scrollingUp) {
+                                animateControlsDown();
+                                controlsDownByScroll = true;
+                            }
+                        }
+                }
+
+            }
+        });
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,28 +161,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position))));
                 String formattedUrl = String.format("%s%s%s", url,
                         AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+                AppGlobals.setCurrentPlayingSong((Integer) parent.getItemAtPosition(position));
                 seekBar.setProgress(0);
-                if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
-                    PlayService.sMediaPlayer.stop();
-                    PlayService.sMediaPlayer.reset();
-                    UpdateUiHelpers.updateUiOnCompletion();
-                    PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
-                }
                 songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                         .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
-                songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
-                System.out.println(songLengthInSeconds);
-                updateValue = songLengthInSeconds / 100;
-                seekBar.setMax(songLengthInSeconds);
-                animateBottomUp();
-                UpdateUiHelpers.setSeekBarIndeterminate();
-                AppGlobals.setSongCompleteStatus(false);
-                Intent intent = new Intent(getApplicationContext(), PlayService.class);
-                intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
-                startService(intent);
+                playSong(formattedUrl);
             }
         });
         mPlayerControl.setOnClickListener(this);
+    }
+
+    private void animateControlsDown() {
+        Animation bottomDown = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.bottom_down);
+        controls_layout.startAnimation(bottomDown);
+        controls_layout.setVisibility(View.GONE);
+        AppGlobals.setControlsVisible(false);
+    }
+
+    private void playSong(String formattedUrl) {
+        if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
+            PlayService.sMediaPlayer.stop();
+            PlayService.sMediaPlayer.reset();
+            UpdateUiHelpers.updateUiOnCompletion();
+            PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
+        }
+        songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
+        updateValue = songLengthInSeconds / 100;
+        seekBar.setMax(songLengthInSeconds);
+        animateBottomUp();
+        UpdateUiHelpers.setSeekBarIndeterminate();
+        AppGlobals.setSongCompleteStatus(false);
+        Intent intent = new Intent(getApplicationContext(), PlayService.class);
+        intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
+        startService(intent);
     }
 
     public void animateBottomUp() {
@@ -137,10 +220,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.play_pause_button:
                 PlayService.togglePlayPause();
                 break;
+            case R.id.next_button:
+                int nextSOngIndex = (AppGlobals.getsSongsIdsArray()
+                        .indexOf(AppGlobals.getCurrentPlayingSong())) + 1;
+                if (nextSOngIndex < AppGlobals.getsSongsIdsArray().size()) {
+                    seekBar.setProgress(0);
+                    int songId = AppGlobals.getsSongsIdsArray().get(nextSOngIndex);
+                    songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                            .get(songId));
+                    String url = AppGlobals.getStreamUrlsHashMap().
+                            get(songId);
+                    String formattedUrl = getFormattedUrl(url);
+                    playSong(formattedUrl);
+                }
+                break;
+            case R.id.previous_button:
+                int previousSOngIndex = (AppGlobals.getsSongsIdsArray()
+                        .indexOf(AppGlobals.getCurrentPlayingSong())) - 1;
+                if (previousSOngIndex != -1) {
+                    seekBar.setProgress(0);
+                    int songId = AppGlobals.getsSongsIdsArray().get(previousSOngIndex);
+                    songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                            .get(songId));
+                    String url = AppGlobals.getStreamUrlsHashMap().
+                            get(songId);
+                    String formattedUrl = getFormattedUrl(url);
+                    playSong(formattedUrl);
+                }
+                break;
         }
     }
 
+    private String getFormattedUrl(String url) {
+        return String.format("%s%s%s", url,
+                AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+    }
+
     class GetSoundDetailsTask extends AsyncTask<String, String, ArrayList<Integer>> {
+
+        private boolean noInternet = false;
+        private String targetUrl;
 
         @Override
         protected void onPreExecute() {
@@ -156,16 +275,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         protected ArrayList<Integer> doInBackground(String... params) {
             int responseCode = 0;
             if (Helpers.isNetworkAvailable() && Helpers.isInternetWorking()) {
+                JsonParser jsonParser = new JsonParser();
+                if (!Helpers.userIdStatus()) {
+                    int urlReply;
+                    try {
+                        urlReply = Helpers.getRequest(AppGlobals.apiUrl);
+                        if (urlReply == 302) {
+                            JsonObject jsonObj = jsonParser.parse(Helpers.getParsedString())
+                                    .getAsJsonObject();
+                            if (!jsonObj.get("location").isJsonNull()) {
+                                String resultUrl = jsonObj.get("location").getAsString();
+                                urlReply = Helpers.getRequest(resultUrl);
+                                if (urlReply == HttpURLConnection.HTTP_OK) {
+                                    JsonObject json = jsonParser.parse(Helpers.getParsedString())
+                                            .getAsJsonObject();
+                                    Helpers.userId(json.get("id").getAsString());
+                                    Helpers.userIdAcquired(true);
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (loadMoreRunning) {
+                    targetUrl = AppGlobals.getNextUrl();
+                } else {
+                    targetUrl = String.format("http://api.soundcloud.com/users/" +
+                                    "%s/tracks.json?client_id=%s&limit=20&linked_partitioning=1",
+                            Helpers.getUserId(),
+                            AppGlobals.CLIENT_KEY);
+                }
                 try {
-                    responseCode = Helpers.getRequest(AppGlobals.USER_URL + AppGlobals.CLIENT_KEY);
+                    responseCode = Helpers.getRequest(targetUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    JsonParser jsonParser = new JsonParser();
-                    JsonArray jsonArray = jsonParser.parse(Helpers.getParsedString())
-                            .getAsJsonArray();
-                    System.out.println(jsonArray);
+                    JsonObject mainData = jsonParser.parse(Helpers.getParsedString())
+                            .getAsJsonObject();
+                    JsonArray jsonArray = mainData.get("collection").getAsJsonArray();
+                    if (mainData.has("next_href")) {
+                        if (!mainData.get("next_href").isJsonNull()) {
+                            String nextUrl = mainData.get("next_href").getAsString();
+                            AppGlobals.setNextUrl(nextUrl);
+                        }
+                    }
                     for (int i = 0; i < jsonArray.size(); i++) {
                         JsonObject jsonObject = jsonArray.get(i).getAsJsonObject();
                         if (!AppGlobals.getsSongsIdsArray().contains(jsonObject.get("id").getAsInt())) {
@@ -192,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         jsonObject.get("artwork_url").getAsString());
                             }
                             JsonObject jsonElements = jsonObject.get("user").getAsJsonObject();
-                            System.out.println(jsonElements.get("username").getAsString());
                             if (!jsonElements.get("username").isJsonNull()) {
                                 AppGlobals.addSongArtistHashMap(currentSongId,
                                         jsonElements.get("username").getAsString());
@@ -202,6 +357,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
                 }
+            } else {
+                noInternet = true;
             }
             return AppGlobals.getsSongsIdsArray();
         }
@@ -209,10 +366,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(ArrayList<Integer> songIdsArray) {
             super.onPostExecute(songIdsArray);
+            if (!loadMoreRunning) {
+                 songsAdapter = new SongsAdapter(getApplicationContext(), R.layout.single_row,
+                        songIdsArray, MainActivity.this);
+            }
+            if (noInternet) {
+                Helpers.alertDialog(MainActivity.this, "No Internet", "No internet");
+            }
             mProgressDialog.dismiss();
-            SongsAdapter songsAdapter = new SongsAdapter(getApplicationContext(),R.layout.single_row,
-                    songIdsArray, MainActivity.this);
-            mListView.setAdapter(songsAdapter);
+            if (loadMoreRunning) {
+                songsAdapter.notifyDataSetChanged();
+            } else {
+                mListView.setAdapter(songsAdapter);
+            }
+            if (AppGlobals.getsSongsIdsArray().size() > 0) {
+                AppGlobals.setCurrentPlayingSong(AppGlobals.getsSongsIdsArray().get(0));
+            }
+            mListView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListView.smoothScrollToPosition(preLast);
+                }
+            });
+            if (hiddenByRefresh) {
+                animateBottomUp();
+                hiddenByRefresh = false;
+            }
+            loadMoreRunning = false;
+
         }
     }
 }
