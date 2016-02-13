@@ -17,7 +17,6 @@ public class PlayService extends Service {
 
     public static CustomMediaPlayer sMediaPlayer;
     public static boolean songPlaying = false;
-    private static Thread thread;
     public static Handler updateHandler;
     public static Runnable timerRunnable;
 
