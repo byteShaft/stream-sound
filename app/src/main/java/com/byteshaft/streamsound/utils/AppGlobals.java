@@ -31,6 +31,7 @@ public class AppGlobals extends Application {
     public static final String apiUrl = String.format("http://api.soundcloud.com/resolve.json?url=" +
             "https://soundcloud.com/%s&client_id=d15e89ac63aed800d452231a67207696", USER_NAME);
     public static final String KEY_ID = "user";
+    private static String nextUrl = "";
 
     @Override
     public void onCreate() {
@@ -130,5 +131,13 @@ public class AppGlobals extends Application {
 
     public static int getCurrentPlayingSong() {
         return sCurrentPlayingSong;
+    }
+
+    public static void setNextUrl(String url) {
+        nextUrl = url;
+    }
+
+    public static String getNextUrl() {
+        return nextUrl;
     }
 }
