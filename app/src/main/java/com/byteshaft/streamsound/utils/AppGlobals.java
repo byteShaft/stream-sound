@@ -16,6 +16,8 @@ public class AppGlobals extends Application {
     private static HashMap<Integer, String> sSongImageUrls;
     private static HashMap<Integer, String > sArtistHashMap;
 
+    final static int NOTIFICATION_ID = 404;
+
     private static Context sContext;
     public static final String USER_URL = "http://api.soundcloud.com/users/197638516/tracks.json?client_id=";
     public static final String CLIENT_KEY = "d15e89ac63aed800d452231a67207696";
