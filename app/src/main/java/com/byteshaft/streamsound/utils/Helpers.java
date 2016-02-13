@@ -15,7 +15,6 @@ public class Helpers {
 
     private static String sParsedString;
 
-
     public static int getRequest(String link) throws IOException {
         URL url = new URL(link);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -76,6 +75,4 @@ public class Helpers {
         }
         return success;
     }
-
-
 }

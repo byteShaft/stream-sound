@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 public class SongsAdapter extends ArrayAdapter {
 
-    private int layoutResource;
     private ArrayList<Integer> songsList;
     private Context mContext;
     private ViewHolder holder;

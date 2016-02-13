@@ -18,7 +18,6 @@ public class UpdateUiHelpers extends ContextWrapper{
     public static void updateUiOnCompletion() {
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
-//            mainActivity.animateBottomDown();
             mainActivity.mPlayerControl.setImageResource(R.drawable.play_light);
             Animation bottomDown = AnimationUtils.loadAnimation(AppGlobals.getContext(),
                     R.anim.bottom_down);
@@ -75,7 +74,4 @@ public class UpdateUiHelpers extends ContextWrapper{
         }
         return false;
     }
-
-
-
 }
