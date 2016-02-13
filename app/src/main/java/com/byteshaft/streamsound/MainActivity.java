@@ -2,6 +2,7 @@ package com.byteshaft.streamsound;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean scrollingUp = false;
     public boolean controlsDownByScroll = false;
     public SongsAdapter songsAdapter;
+    private AudioManager audioManager;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        audioManager = (AudioManager) AppGlobals.getContext().getSystemService(AUDIO_SERVICE);
         sInstance = this;
         mListView = (ListView) findViewById(R.id.song_list);
         mListView.setSmoothScrollbarEnabled(true);
@@ -108,7 +111,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
                         scrollingUp = true;
                         if (controlsDownByScroll) {
-                            if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
+                            if (PlayService.sMediaPlayer != null &&
+                                    PlayService.sMediaPlayer.isPlaying() && audioManager.isMusicActive()) {
                                 animateBottomUp();
                                 controlsDownByScroll = false;
                             }
