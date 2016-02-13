@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     RelativeLayout controls_layout;
     SeekBar seekBar;
     private int songLength;
-    double updateValue;
+    int updateValue;
     private int songLengthInSeconds;
     private static MainActivity sInstance;
     TextView bufferingTextView;
@@ -90,15 +90,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position))));
                 String formattedUrl = String.format("%s%s%s", url,
                         AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+                seekBar.setProgress(0);
+                if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
+                    PlayService.sMediaPlayer.stop();
+                    PlayService.sMediaPlayer.reset();
+                    UpdateUiHelpers.updateUiOnCompletion();
+                }
                 songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                         .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
                 songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
                 System.out.println(songLengthInSeconds);
-                updateValue = songLengthInSeconds / 100.00;
+                updateValue = songLengthInSeconds / 100;
                 seekBar.setMax(songLengthInSeconds);
                 animateBottomUp();
                 UpdateUiHelpers.setSeekBarIndeterminate();
-                seekBar.setProgress(0);
                 AppGlobals.setSongCompleteStatus(false);
                 Intent intent = new Intent(getApplicationContext(), PlayService.class);
                 intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
