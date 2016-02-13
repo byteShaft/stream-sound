@@ -2,6 +2,7 @@ package com.byteshaft.streamsound;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int mLastFirstVisibleItem;
     private boolean scrollingUp = false;
     public boolean controlsDownByScroll = false;
+    public SongsAdapter songsAdapter;
+    private AudioManager audioManager;
 
     public static MainActivity getInstance() {
         return sInstance;
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        audioManager = (AudioManager) AppGlobals.getContext().getSystemService(AUDIO_SERVICE);
         sInstance = this;
         mListView = (ListView) findViewById(R.id.song_list);
         mListView.setSmoothScrollbarEnabled(true);
@@ -103,15 +107,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     final int currentFirstVisibleItem = lw.getFirstVisiblePosition();
 
                     if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-
+                        scrollingUp = false;
                     } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
                         scrollingUp = true;
                         if (controlsDownByScroll) {
-                            animateBottomUp();
-                            controlsDownByScroll = false;
+                            if (PlayService.sMediaPlayer != null &&
+                                    PlayService.sMediaPlayer.isPlaying() && audioManager.isMusicActive()) {
+                                animateBottomUp();
+                                controlsDownByScroll = false;
+                            }
                         }
                     }
-                    System.out.println("up"+scrollingUp);
                     mLastFirstVisibleItem = currentFirstVisibleItem;
                 }
 
@@ -137,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             }
                         } else if (lastItem == (totalItemCount - 1)) {
-                            System.out.println(scrollingUp);
+                            System.out.println("scrollingUp" + scrollingUp);
                             if (!scrollingUp) {
                                 animateControlsDown();
                                 controlsDownByScroll = true;
@@ -274,14 +280,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     int urlReply;
                     try {
                         urlReply = Helpers.getRequest(AppGlobals.apiUrl);
-                        System.out.println(urlReply);
                         if (urlReply == 302) {
                             JsonObject jsonObj = jsonParser.parse(Helpers.getParsedString())
                                     .getAsJsonObject();
                             if (!jsonObj.get("location").isJsonNull()) {
                                 String resultUrl = jsonObj.get("location").getAsString();
                                 urlReply = Helpers.getRequest(resultUrl);
-                                System.out.println(urlReply);
                                 if (urlReply == HttpURLConnection.HTTP_OK) {
                                     JsonObject json = jsonParser.parse(Helpers.getParsedString())
                                             .getAsJsonObject();
@@ -297,20 +301,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (loadMoreRunning) {
                     targetUrl = AppGlobals.getNextUrl();
-                    System.out.println(targetUrl);
                 } else {
                     targetUrl = String.format("http://api.soundcloud.com/users/" +
                                     "%s/tracks.json?client_id=%s&limit=20&linked_partitioning=1",
                             Helpers.getUserId(),
                             AppGlobals.CLIENT_KEY);
                 }
-                System.out.println(Helpers.getUserId());
                 try {
                     responseCode = Helpers.getRequest(targetUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println(targetUrl);
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     JsonObject mainData = jsonParser.parse(Helpers.getParsedString())
                             .getAsJsonObject();
@@ -365,24 +366,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(ArrayList<Integer> songIdsArray) {
             super.onPostExecute(songIdsArray);
-            loadMoreRunning = false;
+            if (!loadMoreRunning) {
+                 songsAdapter = new SongsAdapter(getApplicationContext(), R.layout.single_row,
+                        songIdsArray, MainActivity.this);
+            }
             if (noInternet) {
                 Helpers.alertDialog(MainActivity.this, "No Internet", "No internet");
             }
-            mListView.setAdapter(null);
             mProgressDialog.dismiss();
-            SongsAdapter songsAdapter = new SongsAdapter(getApplicationContext(), R.layout.single_row,
-                    songIdsArray, MainActivity.this);
-            mListView.setAdapter(songsAdapter);
-            mListView.deferNotifyDataSetChanged();
+            if (loadMoreRunning) {
+                songsAdapter.notifyDataSetChanged();
+            } else {
+                mListView.setAdapter(songsAdapter);
+            }
             if (AppGlobals.getsSongsIdsArray().size() > 0) {
                 AppGlobals.setCurrentPlayingSong(AppGlobals.getsSongsIdsArray().get(0));
             }
-            mListView.smoothScrollToPosition(preLast);
+            mListView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListView.smoothScrollToPosition(preLast);
+                }
+            });
             if (hiddenByRefresh) {
                 animateBottomUp();
                 hiddenByRefresh = false;
             }
+            loadMoreRunning = false;
 
         }
     }
