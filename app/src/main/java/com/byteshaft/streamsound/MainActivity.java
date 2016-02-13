@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     PlayService.sMediaPlayer.stop();
                     PlayService.sMediaPlayer.reset();
                     UpdateUiHelpers.updateUiOnCompletion();
+                    PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
                 }
                 songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                         .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
