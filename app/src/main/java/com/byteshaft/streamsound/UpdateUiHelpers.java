@@ -18,7 +18,6 @@ public class UpdateUiHelpers extends ContextWrapper{
     public static void updateUiOnCompletion() {
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
-//            mainActivity.animateBottomDown();
             mainActivity.mPlayerControl.setImageResource(R.drawable.play_light);
             Animation bottomDown = AnimationUtils.loadAnimation(AppGlobals.getContext(),
                     R.anim.bottom_down);
@@ -45,8 +44,10 @@ public class UpdateUiHelpers extends ContextWrapper{
     public static void updateSeekBarOnProgress() {
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
+            System.out.println(mainActivity.seekBar.getProgress());
+            System.out.println(mainActivity.updateValue / 2);
             mainActivity.seekBar.setProgress(mainActivity.seekBar.getProgress()
-                    + ((int) mainActivity.updateValue / 2));
+                    + (mainActivity.updateValue / 2));
         }
     }
 
@@ -73,7 +74,4 @@ public class UpdateUiHelpers extends ContextWrapper{
         }
         return false;
     }
-
-
-
 }

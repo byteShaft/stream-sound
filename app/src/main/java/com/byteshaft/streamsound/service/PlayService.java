@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 
 import com.byteshaft.streamsound.UpdateUiHelpers;
@@ -15,11 +16,15 @@ import java.io.IOException;
 public class PlayService extends Service {
 
     public static CustomMediaPlayer sMediaPlayer;
+    public static boolean songPlaying = false;
+    public static Handler updateHandler;
+    public static Runnable timerRunnable;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String url = intent.getStringExtra(AppGlobals.SOUND_URL);
         sMediaPlayer = new CustomMediaPlayer();
+        updateHandler = new Handler();
         sMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         playSong(url);
         sMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -43,6 +48,18 @@ public class PlayService extends Service {
                 UpdateUiHelpers.updateUiOnCompletion();
             }
         });
+        timerRunnable = new Runnable() {
+            public void run() {
+                if (!AppGlobals.isSongCompleted()) {
+                    AudioManager ar = (AudioManager) AppGlobals.getContext().getSystemService(AUDIO_SERVICE);
+                    System.out.println(songPlaying);
+                    if (ar.isMusicActive() && songPlaying) {
+                        UpdateUiHelpers.updateSeekBarOnProgress();
+                    }
+                }
+                updateHandler.postDelayed(this, 1000);
+            }
+        };
         return START_NOT_STICKY;
     }
 
@@ -69,10 +86,12 @@ public class PlayService extends Service {
     public static void togglePlayPause() {
         if (sMediaPlayer.isPlaying()) {
             sMediaPlayer.pause();
+            songPlaying = false;
+            updateHandler.removeCallbacks(timerRunnable);
         } else {
             sMediaPlayer.start();
-            MediaObserver mediaObserver = new MediaObserver();
-            new Thread(mediaObserver).start();
+            songPlaying = true;
+            updateHandler.postDelayed(timerRunnable, 100);
         }
     }
 
@@ -85,24 +104,6 @@ public class PlayService extends Service {
             }
             sMediaPlayer.release();
             sMediaPlayer = null;
-        }
-    }
-
-    private static class MediaObserver implements Runnable {
-
-        @Override
-        public void run() {
-            while (!AppGlobals.isSongCompleted()) {
-                AudioManager ar = (AudioManager) AppGlobals.getContext().getSystemService(AUDIO_SERVICE);
-                if (ar.isMusicActive()) {
-                    UpdateUiHelpers.updateSeekBarOnProgress();
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
