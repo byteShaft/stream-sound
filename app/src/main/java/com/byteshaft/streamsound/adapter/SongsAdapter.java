@@ -47,6 +47,11 @@ public class SongsAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.songId.setText(String.valueOf(songsList.get(position)));
+        if (AppGlobals.getSongImageUrlHashMap().containsKey(songsList.get(position))) {
+            Picasso.with(mActivity).cancelRequest(holder.thumbNail);
+            Picasso.with(mActivity).load(AppGlobals.getSongImageUrlHashMap()
+                    .get(songsList.get(position))).into(holder.thumbNail);
+        }
         if (AppGlobals.getSongArtistHashMap().containsKey(songsList.get(position))) {
             holder.artist.setText(AppGlobals.getSongArtistHashMap().get(songsList.get(position)));
         }
@@ -61,11 +66,6 @@ public class SongsAdapter extends ArrayAdapter {
         }
         if (AppGlobals.getGenreHashMap().containsKey(songsList.get(position))) {
             holder.genre.setText(AppGlobals.getGenreHashMap().get(songsList.get(position)));
-        }
-        if (AppGlobals.getSongImageUrlHashMap().containsKey(songsList.get(position))) {
-            Picasso.with(mActivity).cancelRequest(holder.thumbNail);
-            Picasso.with(mActivity).load(AppGlobals.getSongImageUrlHashMap()
-                    .get(songsList.get(position))).into(holder.thumbNail);
         }
         return convertView;
     }

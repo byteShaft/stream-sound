@@ -3,14 +3,12 @@ package com.byteshaft.streamsound.utils;
 import android.app.Application;
 import android.content.Context;
 
-import com.byteshaft.streamsound.R;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AppGlobals extends Application {
 
-    public static final String USER_NAME = String.valueOf(R.string.user_name);
+    public static String USER_NAME = "pti-social-media";
     private static ArrayList<Integer> sSongsIdsArray;
     private static HashMap<Integer, String> sSongsTitleHashMap;
     private static HashMap<Integer, String> sStreamUrls;
@@ -36,7 +34,7 @@ public class AppGlobals extends Application {
         super.onCreate();
         sContext = getApplicationContext();
         apiUrl = String.format("http://api.soundcloud.com/resolve.json?url=" +
-                "https://soundcloud.com/%s&client_id=d15e89ac63aed800d452231a67207696", "pti-social-media");
+                "https://soundcloud.com/%s&client_id=d15e89ac63aed800d452231a67207696", USER_NAME);
     }
 
     public static Context getContext() {
