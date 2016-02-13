@@ -52,7 +52,6 @@ public class PlayService extends Service {
             public void run() {
                 if (!AppGlobals.isSongCompleted()) {
                     AudioManager ar = (AudioManager) AppGlobals.getContext().getSystemService(AUDIO_SERVICE);
-                    System.out.println(songPlaying);
                     if (ar.isMusicActive() && songPlaying) {
                         UpdateUiHelpers.updateSeekBarOnProgress();
                     }
