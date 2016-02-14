@@ -46,6 +46,8 @@ public class UpdateUiHelpers extends ContextWrapper{
         if (mainActivity != null) {
             mainActivity.seekBar.setProgress(mainActivity.seekBar.getProgress()
                     + (mainActivity.updateValue / 2));
+            mainActivity.timeTextView.setText(String.valueOf(mainActivity.seekBar.getProgress()
+                    + (mainActivity.updateValue / 2)));
         }
     }
 

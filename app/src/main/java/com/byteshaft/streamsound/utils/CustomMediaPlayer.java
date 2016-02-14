@@ -3,11 +3,19 @@ package com.byteshaft.streamsound.utils;
 import android.media.MediaPlayer;
 
 import com.byteshaft.streamsound.UpdateUiHelpers;
+import com.byteshaft.streamsound.service.PlayService;
+
+import java.io.IOException;
 
 public class CustomMediaPlayer extends MediaPlayer {
 
     @Override
     public void start() throws IllegalStateException {
+        try {
+            PlayService.getInstance().showNotification();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (UpdateUiHelpers.getSeekbarIndeterminateStatus()) {
             UpdateUiHelpers.removeSeekBarIndeterminate();
         }
@@ -19,6 +27,7 @@ public class CustomMediaPlayer extends MediaPlayer {
     @Override
     public void stop() throws IllegalStateException {
         super.stop();
+        PlayService.getInstance().stopSelf();
     }
 
     @Override
