@@ -2,6 +2,7 @@ package com.byteshaft.streamsound.utils;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ public class AppGlobals extends Application {
     public static String apiUrl;
     public static final String KEY_ID = "user";
     private static String nextUrl = "";
+    private static Bitmap imageBitMap = null;
 
     @Override
     public void onCreate() {
@@ -137,6 +139,14 @@ public class AppGlobals extends Application {
 
     public static String getNextUrl() {
         return nextUrl;
+    }
+
+    public static void setCurrentPlayingSongBitMap(Bitmap bitMap) {
+        imageBitMap = bitMap;
+    }
+
+    public static Bitmap getCurrentPlayingSongBitMap() {
+        return imageBitMap;
     }
 
 }
