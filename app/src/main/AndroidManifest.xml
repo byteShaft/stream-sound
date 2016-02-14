@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <service android:name=".service.PlayService" android:enabled="true"/>
+        <service android:name=".service.NotificationService" android:enabled="true"/>
     </application>
 
 </manifest>

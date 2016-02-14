@@ -3,6 +3,8 @@ package com.byteshaft.streamsound;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,6 +30,8 @@ import com.byteshaft.streamsound.utils.Helpers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -184,6 +188,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void playSong(String formattedUrl) {
+        Picasso.with(this).load(AppGlobals.getSongImageUrlHashMap()
+                .get(AppGlobals.getCurrentPlayingSong())).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                System.out.println(errorDrawable.getState());
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
         if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
             PlayService.sMediaPlayer.stop();
             PlayService.sMediaPlayer.reset();
@@ -250,11 +273,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void nextSong() {
-        int nextSOngIndex = (AppGlobals.getsSongsIdsArray()
+        System.out.println(AppGlobals.getsSongsIdsArray()
+                .indexOf(AppGlobals.getCurrentPlayingSong()));
+        int nextSongIndex = (AppGlobals.getsSongsIdsArray()
                 .indexOf(AppGlobals.getCurrentPlayingSong())) + 1;
-        if (nextSOngIndex < AppGlobals.getsSongsIdsArray().size()) {
+        System.out.println(nextSongIndex);
+        if (nextSongIndex < AppGlobals.getsSongsIdsArray().size()) {
             seekBar.setProgress(0);
-            int songId = AppGlobals.getsSongsIdsArray().get(nextSOngIndex);
+            int songId = AppGlobals.getsSongsIdsArray().get(nextSongIndex);
             songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                     .get(songId));
             String url = AppGlobals.getStreamUrlsHashMap().

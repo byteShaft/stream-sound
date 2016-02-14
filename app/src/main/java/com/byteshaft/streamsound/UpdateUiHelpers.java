@@ -46,9 +46,18 @@ public class UpdateUiHelpers extends ContextWrapper{
         if (mainActivity != null) {
             mainActivity.seekBar.setProgress(mainActivity.seekBar.getProgress()
                     + (mainActivity.updateValue / 2));
-            mainActivity.timeTextView.setText(String.valueOf(mainActivity.seekBar.getProgress()
+            mainActivity.timeTextView.setText(secondToMinutes(mainActivity.seekBar.getProgress()
                     + (mainActivity.updateValue / 2)));
         }
+    }
+
+    private static String secondToMinutes(int second) {
+        int minutes = second / 60;
+        int seconds = second % 60;
+        System.out.println(minutes);
+        System.out.println(seconds);
+        return minutes + ":" + seconds;
+
     }
 
     public static void setSeekBarIndeterminate() {
@@ -63,7 +72,8 @@ public class UpdateUiHelpers extends ContextWrapper{
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
             mainActivity.seekBar.setIndeterminate(false);
-            mainActivity.bufferingTextView.setText("");
+            mainActivity.bufferingTextView.setText(
+                    AppGlobals.getTitlesHashMap().get(AppGlobals.getCurrentPlayingSong()));
         }
     }
 
