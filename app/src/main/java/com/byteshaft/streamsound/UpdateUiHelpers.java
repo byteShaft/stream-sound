@@ -56,6 +56,9 @@ public class UpdateUiHelpers extends ContextWrapper{
         int seconds = second % 60;
         System.out.println(minutes);
         System.out.println(seconds);
+        if (seconds > 10) {
+            seconds = Integer.parseInt("0"+seconds);
+        }
         return minutes + ":" + seconds;
 
     }
