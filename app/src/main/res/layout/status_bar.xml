@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="#666666"
+    >
+
+    <ImageView
+        android:id="@+id/status_bar_icon"
+        android:layout_width="@dimen/status_bar_album_art"
+        android:layout_height="@dimen/status_bar_album_art"
+        android:padding="2dp"
+        android:background="@drawable/ic_launcher"
+        android:src="@drawable/ic_launcher"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/status_bar_button_info_container_padding_left"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:id="@+id/status_bar_play"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/cd_play" />
+
+        <ImageButton
+            android:id="@+id/status_bar_next"
+            android:background="?android:selectableItemBackground"
+            android:layout_toRightOf="@+id/status_bar_play"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/cd_next"
+            android:src="@drawable/apollo_holo_dark_next" />
+
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/status_bar_collapse"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/apollo_holo_dark_notification_bar_collapse" />
+
+</RelativeLayout>

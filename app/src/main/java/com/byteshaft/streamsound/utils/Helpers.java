@@ -1,13 +1,10 @@
 package com.byteshaft.streamsound.utils;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -81,22 +78,6 @@ public class Helpers {
             e.printStackTrace();
         }
         return success;
-    }
-
-
-    public static void alertDialog(final Activity activity, String title, String msg) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-        alertDialogBuilder.setTitle(title);
-        alertDialogBuilder
-                .setMessage(msg)
-                .setCancelable(false)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
     }
 
     public static void userIdAcquired(boolean value) {
