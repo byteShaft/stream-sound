@@ -242,8 +242,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         PlayService.getInstance().stopSelf();
         NotificationService.getsInstance().stopSelf();
-
-
     }
 
     @Override
