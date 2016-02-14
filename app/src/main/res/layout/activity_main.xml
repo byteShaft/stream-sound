@@ -8,15 +8,15 @@
 
     <ListView
         android:id="@+id/song_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:listSelector="@drawable/list_item_selector">
     </ListView>
 
     <RelativeLayout
         android:id="@+id/now_playing_controls_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:thumb="@drawable/transparent_drawable"
         android:background="@drawable/card_gridview_light" >
