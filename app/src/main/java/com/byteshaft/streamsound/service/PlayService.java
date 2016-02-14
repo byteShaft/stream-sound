@@ -112,6 +112,7 @@ public class PlayService extends Service {
             sMediaPlayer.release();
             sMediaPlayer = null;
         }
+        NotificationService.getsInstance().stopSelf();
     }
 
 

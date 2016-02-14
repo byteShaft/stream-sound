@@ -23,6 +23,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.byteshaft.streamsound.adapter.SongsAdapter;
+import com.byteshaft.streamsound.service.NotificationService;
 import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
 import com.byteshaft.streamsound.utils.Constants;
@@ -239,6 +240,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+        PlayService.getInstance().stopSelf();
+        NotificationService.getsInstance().stopSelf();
+
 
     }
 
