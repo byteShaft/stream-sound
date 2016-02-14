@@ -47,7 +47,8 @@
             android:layout_height="72dp"
             android:layout_below="@+id/buffering"
             android:paddingBottom="15dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout">
 
             <ImageButton
                 android:id="@+id/previous_button"
@@ -90,6 +91,17 @@
                 android:src="@drawable/btn_playback_next" />
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/time_progress"
+            android:layout_below="@+id/nowPlayingSeekBar"
+            android:layout_alignLeft="@+id/nowPlayingSeekBar"
+            android:layout_alignStart="@+id/nowPlayingSeekBar"
+            android:layout_marginLeft="41dp"
+            android:layout_marginStart="41dp" />
 
     </RelativeLayout>
 </RelativeLayout>

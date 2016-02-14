@@ -1,10 +1,12 @@
 package com.byteshaft.streamsound;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import com.byteshaft.streamsound.adapter.SongsAdapter;
 import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
+import com.byteshaft.streamsound.utils.Constants;
 import com.byteshaft.streamsound.utils.Helpers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean controlsDownByScroll = false;
     public SongsAdapter songsAdapter;
     private AudioManager audioManager;
-
+    TextView timeTextView;
     public static MainActivity getInstance() {
         return sInstance;
     }
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonPrevious = (ImageView) findViewById(R.id.previous_button);
         seekBar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
         bufferingTextView = (TextView) findViewById(R.id.buffering);
+        timeTextView = (TextView) findViewById(R.id.time_progress);
         buttonNext.setOnClickListener(this);
         buttonPrevious.setOnClickListener(this);
         AppGlobals.initializeAllDataSets();
@@ -194,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppGlobals.setSongCompleteStatus(false);
         Intent intent = new Intent(getApplicationContext(), PlayService.class);
         intent.putExtra(AppGlobals.SOUND_URL, formattedUrl);
+        intent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
         startService(intent);
     }
 
@@ -221,33 +226,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 PlayService.togglePlayPause();
                 break;
             case R.id.next_button:
-                int nextSOngIndex = (AppGlobals.getsSongsIdsArray()
-                        .indexOf(AppGlobals.getCurrentPlayingSong())) + 1;
-                if (nextSOngIndex < AppGlobals.getsSongsIdsArray().size()) {
-                    seekBar.setProgress(0);
-                    int songId = AppGlobals.getsSongsIdsArray().get(nextSOngIndex);
-                    songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
-                            .get(songId));
-                    String url = AppGlobals.getStreamUrlsHashMap().
-                            get(songId);
-                    String formattedUrl = getFormattedUrl(url);
-                    playSong(formattedUrl);
-                }
+                nextSong();
                 break;
             case R.id.previous_button:
-                int previousSOngIndex = (AppGlobals.getsSongsIdsArray()
-                        .indexOf(AppGlobals.getCurrentPlayingSong())) - 1;
-                if (previousSOngIndex != -1) {
-                    seekBar.setProgress(0);
-                    int songId = AppGlobals.getsSongsIdsArray().get(previousSOngIndex);
-                    songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
-                            .get(songId));
-                    String url = AppGlobals.getStreamUrlsHashMap().
-                            get(songId);
-                    String formattedUrl = getFormattedUrl(url);
-                    playSong(formattedUrl);
-                }
+                previousSong();
                 break;
+        }
+    }
+
+    public void previousSong() {
+        int previousSOngIndex = (AppGlobals.getsSongsIdsArray()
+                .indexOf(AppGlobals.getCurrentPlayingSong())) - 1;
+        if (previousSOngIndex != -1) {
+            seekBar.setProgress(0);
+            int songId = AppGlobals.getsSongsIdsArray().get(previousSOngIndex);
+            songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                    .get(songId));
+            String url = AppGlobals.getStreamUrlsHashMap().
+                    get(songId);
+            String formattedUrl = getFormattedUrl(url);
+            playSong(formattedUrl);
+        }
+    }
+
+    public void nextSong() {
+        int nextSOngIndex = (AppGlobals.getsSongsIdsArray()
+                .indexOf(AppGlobals.getCurrentPlayingSong())) + 1;
+        if (nextSOngIndex < AppGlobals.getsSongsIdsArray().size()) {
+            seekBar.setProgress(0);
+            int songId = AppGlobals.getsSongsIdsArray().get(nextSOngIndex);
+            songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                    .get(songId));
+            String url = AppGlobals.getStreamUrlsHashMap().
+                    get(songId);
+            String formattedUrl = getFormattedUrl(url);
+            playSong(formattedUrl);
         }
     }
 
@@ -366,14 +379,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(ArrayList<Integer> songIdsArray) {
             super.onPostExecute(songIdsArray);
+            mProgressDialog.dismiss();
             if (!loadMoreRunning) {
                  songsAdapter = new SongsAdapter(getApplicationContext(), R.layout.single_row,
                         songIdsArray, MainActivity.this);
             }
             if (noInternet) {
-                Helpers.alertDialog(MainActivity.this, "No Internet", "No internet");
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                alertDialogBuilder.setTitle("No Internet");
+                alertDialogBuilder
+                        .setMessage("please check your network connection.")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialogBuilder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new GetSoundDetailsTask().execute();
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
             }
-            mProgressDialog.dismiss();
             if (loadMoreRunning) {
                 songsAdapter.notifyDataSetChanged();
             } else {
