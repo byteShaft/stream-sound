@@ -46,14 +46,9 @@ public class UpdateUiHelpers extends ContextWrapper{
         PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
         if (PlayerListFragment != null) {
             int progressValue = PlayerListFragment.seekBar.getProgress();
-            if (progressValue == 1 && progressValue < 2) {
-                progressValue = 0;
-            }
-            PlayerListFragment.seekBar.setProgress(PlayerListFragment.seekBar.getProgress()
+            PlayerListFragment.seekBar.setProgress(progressValue
                     + (PlayerListFragment.updateValue / 2));
-            System.out.println(PlayerListFragment.seekBar.getProgress());
-            System.out.println((PlayerListFragment.updateValue / 2));
-            PlayerListFragment.timeTextView.setText(secondToMinutes(PlayerListFragment.seekBar.getProgress()
+            PlayerListFragment.timeTextView.setText(secondToMinutes(progressValue
                     + (PlayerListFragment.updateValue / 2)));
         }
     }
