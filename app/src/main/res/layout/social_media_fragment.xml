@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/social_media_layout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="social"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:orientation="horizontal" >
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/fb_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/list_item_selector"
+            android:src="@drawable/ic_facebook" />
+
+        <ImageButton
+            android:id="@+id/twitter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/list_item_selector"
+            android:src="@drawable/ic_twitter"/>
+
+        <ImageButton
+            android:id="@+id/instagram_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/list_item_selector"
+            android:src="@drawable/ic_instagram"/>
+
+        <ImageButton
+            android:id="@+id/youtube_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/list_item_selector"
+            android:src="@drawable/ic_youtube" />
+
+    </LinearLayout>
+
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/social_media_layout" >
+
+    </WebView>
+
+</RelativeLayout>

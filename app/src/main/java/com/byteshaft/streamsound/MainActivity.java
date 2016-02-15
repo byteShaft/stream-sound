@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return "player";
                 case 2:
-                    return "social";
+                    return "Social";
             }
             return null;
         }
