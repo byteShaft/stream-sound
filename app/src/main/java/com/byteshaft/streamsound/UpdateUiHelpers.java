@@ -44,6 +44,10 @@ public class UpdateUiHelpers extends ContextWrapper{
     public static void updateSeekBarOnProgress() {
         MainActivity mainActivity = MainActivity.getInstance();
         if (mainActivity != null) {
+            int progressValue = mainActivity.seekBar.getProgress();
+            if (progressValue == 1 && progressValue < 2) {
+                progressValue = 0;
+            }
             mainActivity.seekBar.setProgress(mainActivity.seekBar.getProgress()
                     + (mainActivity.updateValue / 2));
             System.out.println(mainActivity.seekBar.getProgress());
