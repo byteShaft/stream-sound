@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.byteshaft.streamsound.fragments.PlayerFragment;
 import com.byteshaft.streamsound.fragments.PlayerListFragment;
@@ -33,16 +32,20 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         mViewPager.setOffscreenPageLimit(3);
-//        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-//            tabLayout.getTabAt(i).setIcon(getIconForEach(i));
-//        }
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabLayout.getTabAt(i).setIcon(getIconForEach(i));
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        PlayService.getInstance().stopSelf();
-        NotificationService.getsInstance().stopSelf();
+        if (PlayService.getInstance() != null) {
+            PlayService.getInstance().stopSelf();
+        }
+        if (NotificationService.getsInstance() != null) {
+            NotificationService.getsInstance().stopSelf();
+        }
     }
 
     @Override
@@ -89,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.i("Positions", String.valueOf(position));
             switch (position) {
                 case 0:
                     return new PlayerListFragment();
@@ -108,17 +110,17 @@ public class MainActivity extends AppCompatActivity {
             return 3;
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "List";
-                case 1:
-                    return "player";
-                case 2:
-                    return "Social";
-            }
-            return null;
-        }
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return "List";
+//                case 1:
+//                    return "player";
+//                case 2:
+//                    return "Social";
+//            }
+//            return null;
+//        }
     }
-}
+    }

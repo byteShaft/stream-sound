@@ -74,14 +74,12 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
 
 
     public static PlayerListFragment getFragment() {
-        PlayerListFragment fragment = new PlayerListFragment();
-        return fragment;
+        return sInstance;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.activity_main, container, false);
-        System.out.println("PlayerListFragment");
         sInstance = this;
         audioManager = (AudioManager) AppGlobals.getContext().getSystemService(Context.AUDIO_SERVICE);
         mListView = (ListView) mBaseView.findViewById(R.id.song_list);
