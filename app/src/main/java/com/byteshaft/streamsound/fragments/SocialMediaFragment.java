@@ -16,14 +16,13 @@ import com.byteshaft.streamsound.R;
 
 public class SocialMediaFragment extends Fragment implements View.OnClickListener {
 
-
     public static SocialMediaFragment getFragment() {
         SocialMediaFragment fragment = new SocialMediaFragment();
         return fragment;
     }
 
     private View mBaseView;
-    private WebView mWebView;
+    private static WebView mWebView;
     private ProgressDialog progressDialog;
 
     /// urls
@@ -38,8 +37,6 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
     private ImageButton buttonInstagram;
     private ImageButton buttonYouTube;
 
-    private boolean clicked = false ;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.social_media_fragment, container, false);
@@ -49,9 +46,7 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         buttonInstagram = (ImageButton) mBaseView.findViewById(R.id.instagram_button);
         buttonYouTube = (ImageButton) mBaseView.findViewById(R.id.youtube_button);
         progressDialog = ProgressDialog.show(getActivity(), "", "Loading ...", true);
-
-
-
+        /// initializing social media buttons buttons
         buttonFacebook.setOnClickListener(this);
         buttonTwitter.setOnClickListener(this);
         buttonInstagram.setOnClickListener(this);
@@ -63,6 +58,14 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         mWebView.loadUrl(facebookUrl);
         System.out.println("Social");
         return mBaseView;
+    }
+
+    public static boolean canGoBack(){
+        return mWebView.canGoBack();
+    }
+
+    public static void goBack(){
+        mWebView.goBack();
     }
 
     @Override
@@ -128,24 +131,5 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
             progressDialog.show();
             super.onPageStarted(view, url, favicon);
         }
-
     }
-
-
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//            switch (keyCode) {
-//                case KeyEvent.KEYCODE_BACK:
-//                    if (mWebView.canGoBack()) {
-//                        mWebView.goBack();
-//                    } else {
-//                        finish();
-//                    }
-//                    return true;
-//            }
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
-
 }
