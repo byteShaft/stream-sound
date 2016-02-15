@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stream Sound</string>
+    <string name="app_name">CoderCast</string>
 
     <string name="cd_repeat">Repeat one or all</string>
     <string name="cd_previous">Skip backwards</string>

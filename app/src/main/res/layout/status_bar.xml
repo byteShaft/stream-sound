@@ -15,37 +15,45 @@
         android:scaleType="center"
         android:visibility="gone" />
 
-    <RelativeLayout
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/status_bar_button_info_container_padding_left"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
-
+        android:divider="?android:listDivider"
+        android:layout_toRightOf="@id/status_bar_icon"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:showDividers="middle"
+        android:dividerPadding="12.0dip">
+        <ImageButton
+            android:id="@+id/status_bar_prev"
+            android:background="?android:selectableItemBackground"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/apollo_holo_dark_prev"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0" />
         <ImageButton
             android:id="@+id/status_bar_play"
             android:background="?android:selectableItemBackground"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="@string/cd_play" />
-
-        <ImageButton
-            android:id="@+id/status_bar_next"
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/apollo_holo_dark_play"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0" />
+        <ImageButton android:id="@+id/status_bar_next"
             android:background="?android:selectableItemBackground"
-            android:layout_toRightOf="@+id/status_bar_play"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:contentDescription="@string/cd_next"
-            android:src="@drawable/apollo_holo_dark_next" />
-
-    </RelativeLayout>
+            android:padding="10.0dip"
+            android:layout_width="0.0dip"
+            android:layout_height="@dimen/play_controls_notification"
+            android:src="@drawable/apollo_holo_dark_next"
+            android:scaleType="fitCenter"
+            android:layout_weight="1.0" />
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/status_bar_collapse"
