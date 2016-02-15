@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return "SECTION 2";
                 case 2:
-                    return "SECTION 3";
+                    return "Social";
             }
             return null;
         }
