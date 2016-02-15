@@ -14,6 +14,12 @@ import com.byteshaft.streamsound.R;
 
 public class SocialMediaFragment extends Fragment implements View.OnClickListener {
 
+
+    public static SocialMediaFragment getFragment() {
+        SocialMediaFragment fragment = new SocialMediaFragment();
+        return fragment;
+    }
+
     private View mBaseView;
     private WebView mWebView;
 
@@ -49,6 +55,7 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(facebookUrl);
+        System.out.println("Social");
         return mBaseView;
     }
 

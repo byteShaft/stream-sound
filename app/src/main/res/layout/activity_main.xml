@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_img"
-    tools:context="com.byteshaft.streamsound.MainActivity">
+    android:background="@drawable/bg_img">
 
     <ListView
         android:id="@+id/song_list"
