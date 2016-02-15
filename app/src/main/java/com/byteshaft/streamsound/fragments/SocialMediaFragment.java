@@ -1,5 +1,7 @@
 package com.byteshaft.streamsound.fragments;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +24,7 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
 
     private View mBaseView;
     private WebView mWebView;
+    private ProgressDialog progressDialog;
 
     /// urls
     private String facebookUrl = "https://m.facebook.com/shgr8rb";
@@ -45,6 +48,9 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         buttonTwitter = (ImageButton) mBaseView.findViewById(R.id.twitter_button);
         buttonInstagram = (ImageButton) mBaseView.findViewById(R.id.instagram_button);
         buttonYouTube = (ImageButton) mBaseView.findViewById(R.id.youtube_button);
+        progressDialog = ProgressDialog.show(getActivity(), "", "Loading ...", true);
+
+
 
         buttonFacebook.setOnClickListener(this);
         buttonTwitter.setOnClickListener(this);
@@ -52,7 +58,7 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         buttonYouTube.setOnClickListener(this);
 
         mWebView = (WebView) mBaseView.findViewById(R.id.webView);
-        mWebView.setWebViewClient(new WebViewClient());
+        mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(facebookUrl);
         System.out.println("Social");
@@ -107,6 +113,22 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
 
     private void resetColor(ImageButton button) {
         button.setColorFilter(ContextCompat.getColor(getContext(), R.color.transparent));
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            progressDialog.dismiss();
+            super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            progressDialog.show();
+            super.onPageStarted(view, url, favicon);
+        }
+
     }
 
 
