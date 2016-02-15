@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.byteshaft.streamsound.fragments.PlayerListFragment;
 import com.byteshaft.streamsound.utils.AppGlobals;
 
 public class UpdateUiHelpers extends ContextWrapper{
@@ -16,44 +17,44 @@ public class UpdateUiHelpers extends ContextWrapper{
     }
 
     public static void updateUiOnCompletion() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            mainActivity.mPlayerControl.setImageResource(R.drawable.play_light);
+        PlayerListFragment playerFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (playerFragment != null) {
+            playerFragment.mPlayerControl.setImageResource(R.drawable.play_light);
             Animation bottomDown = AnimationUtils.loadAnimation(AppGlobals.getContext(),
                     R.anim.bottom_down);
-            mainActivity.controls_layout.startAnimation(bottomDown);
-            mainActivity.controls_layout.setVisibility(View.GONE);
+            playerFragment.controls_layout.startAnimation(bottomDown);
+            playerFragment.controls_layout.setVisibility(View.GONE);
             AppGlobals.setControlsVisible(false);
         }
     }
 
     public static void updateUiOnPause() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            mainActivity.mPlayerControl.setImageResource(R.drawable.play_light);
+        PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (PlayerListFragment != null) {
+            PlayerListFragment.mPlayerControl.setImageResource(R.drawable.play_light);
         }
     }
 
     public static void updateUiOnPlayerStart() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            mainActivity.mPlayerControl.setImageResource(R.drawable.pause_light);
+        PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (PlayerListFragment != null) {
+            PlayerListFragment.mPlayerControl.setImageResource(R.drawable.pause_light);
         }
     }
 
     public static void updateSeekBarOnProgress() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            int progressValue = mainActivity.seekBar.getProgress();
+        PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (PlayerListFragment != null) {
+            int progressValue = PlayerListFragment.seekBar.getProgress();
             if (progressValue == 1 && progressValue < 2) {
                 progressValue = 0;
             }
-            mainActivity.seekBar.setProgress(mainActivity.seekBar.getProgress()
-                    + (mainActivity.updateValue / 2));
-            System.out.println(mainActivity.seekBar.getProgress());
-            System.out.println((mainActivity.updateValue / 2));
-            mainActivity.timeTextView.setText(secondToMinutes(mainActivity.seekBar.getProgress()
-                    + (mainActivity.updateValue / 2)));
+            PlayerListFragment.seekBar.setProgress(PlayerListFragment.seekBar.getProgress()
+                    + (PlayerListFragment.updateValue / 2));
+            System.out.println(PlayerListFragment.seekBar.getProgress());
+            System.out.println((PlayerListFragment.updateValue / 2));
+            PlayerListFragment.timeTextView.setText(secondToMinutes(PlayerListFragment.seekBar.getProgress()
+                    + (PlayerListFragment.updateValue / 2)));
         }
     }
 
@@ -69,26 +70,26 @@ public class UpdateUiHelpers extends ContextWrapper{
     }
 
     public static void setSeekBarIndeterminate() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            mainActivity.seekBar.setIndeterminate(true);
-            mainActivity.bufferingTextView.setText("Buffering...");
+        PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (PlayerListFragment != null) {
+            PlayerListFragment.seekBar.setIndeterminate(true);
+            PlayerListFragment.bufferingTextView.setText("Buffering...");
         }
     }
 
     public static void removeSeekBarIndeterminate() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            mainActivity.seekBar.setIndeterminate(false);
-            mainActivity.bufferingTextView.setText(
+        PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (PlayerListFragment != null) {
+            PlayerListFragment.seekBar.setIndeterminate(false);
+            PlayerListFragment.bufferingTextView.setText(
                     AppGlobals.getTitlesHashMap().get(AppGlobals.getCurrentPlayingSong()));
         }
     }
 
     public static boolean getSeekbarIndeterminateStatus() {
-        MainActivity mainActivity = MainActivity.getInstance();
-        if (mainActivity != null) {
-            return mainActivity.seekBar.isIndeterminate();
+        PlayerListFragment PlayerListFragment = com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance();
+        if (PlayerListFragment != null) {
+            return PlayerListFragment.seekBar.isIndeterminate();
         }
         return false;
     }
