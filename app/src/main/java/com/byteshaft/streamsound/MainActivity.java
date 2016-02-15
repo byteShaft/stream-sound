@@ -171,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String formattedUrl = String.format("%s%s%s", url,
                         AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
                 AppGlobals.setCurrentPlayingSong((Integer) parent.getItemAtPosition(position));
-                seekBar.setProgress(0);
                 songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                         .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
                 playSong(formattedUrl);
@@ -193,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .get(AppGlobals.getCurrentPlayingSong())).into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                AppGlobals.setCurrentPlayingSongBitMap(bitmap);
 
 
             }
@@ -208,15 +208,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-        if (PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
+        if (PlayService.sMediaPlayer != null) {
             PlayService.sMediaPlayer.stop();
             PlayService.sMediaPlayer.reset();
-            UpdateUiHelpers.updateUiOnCompletion();
             PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
         }
         songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
         updateValue = songLengthInSeconds / 100;
         seekBar.setMax(songLengthInSeconds);
+        seekBar.setProgress(0);
         animateBottomUp();
         UpdateUiHelpers.setSeekBarIndeterminate();
         AppGlobals.setSongCompleteStatus(false);
@@ -227,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void animateBottomUp() {
+        System.out.println(AppGlobals.getControlsVisibility());
         if (!AppGlobals.getControlsVisibility()) {
             Animation bottomUp = AnimationUtils.loadAnimation(MainActivity.this,
                     R.anim.bottom_up);
@@ -260,11 +261,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void previousSong() {
-        int previousSOngIndex = (AppGlobals.getsSongsIdsArray()
+        int previousSongIndex = (AppGlobals.getsSongsIdsArray()
                 .indexOf(AppGlobals.getCurrentPlayingSong())) - 1;
-        if (previousSOngIndex != -1) {
+        if (previousSongIndex != -1) {
             seekBar.setProgress(0);
-            int songId = AppGlobals.getsSongsIdsArray().get(previousSOngIndex);
+            int songId = AppGlobals.getsSongsIdsArray().get(previousSongIndex);
+            AppGlobals.setCurrentPlayingSong(songId);
             songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                     .get(songId));
             String url = AppGlobals.getStreamUrlsHashMap().
@@ -283,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (nextSongIndex < AppGlobals.getsSongsIdsArray().size()) {
             seekBar.setProgress(0);
             int songId = AppGlobals.getsSongsIdsArray().get(nextSongIndex);
+            AppGlobals.setCurrentPlayingSong(songId);
             songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                     .get(songId));
             String url = AppGlobals.getStreamUrlsHashMap().

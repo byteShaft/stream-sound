@@ -98,7 +98,7 @@ public class PlayService extends Service {
         } else {
             sMediaPlayer.start();
             songPlaying = true;
-            updateHandler.postDelayed(timerRunnable, 100);
+            updateHandler.postDelayed(timerRunnable, 10);
         }
     }
 
