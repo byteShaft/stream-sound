@@ -39,7 +39,7 @@ public class NotificationService extends Service {
 
         } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
             Log.i(LOG_TAG, "Clicked Previous");
-            MainActivity.getInstance().previousSong();
+            com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance().previousSong();
             showNotification();
         } else if (intent.getAction().equals(Constants.ACTION.PLAY_ACTION)) {
             PlayService.togglePlayPause();
@@ -47,7 +47,7 @@ public class NotificationService extends Service {
             Log.i(LOG_TAG, "Clicked Play");
         } else if (intent.getAction().equals(Constants.ACTION.NEXT_ACTION)) {
             Log.i(LOG_TAG, "Clicked Next");
-            MainActivity.getInstance().nextSong();
+            com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance().nextSong();
             showNotification();
         } else if (intent.getAction().equals(
                 Constants.ACTION.STOPFOREGROUND_ACTION)) {
