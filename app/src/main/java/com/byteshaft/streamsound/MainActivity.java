@@ -261,11 +261,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void previousSong() {
-        int previousSOngIndex = (AppGlobals.getsSongsIdsArray()
+        int previousSongIndex = (AppGlobals.getsSongsIdsArray()
                 .indexOf(AppGlobals.getCurrentPlayingSong())) - 1;
-        if (previousSOngIndex != -1) {
+        if (previousSongIndex != -1) {
             seekBar.setProgress(0);
-            int songId = AppGlobals.getsSongsIdsArray().get(previousSOngIndex);
+            int songId = AppGlobals.getsSongsIdsArray().get(previousSongIndex);
+            AppGlobals.setCurrentPlayingSong(songId);
             songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                     .get(songId));
             String url = AppGlobals.getStreamUrlsHashMap().
@@ -284,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (nextSongIndex < AppGlobals.getsSongsIdsArray().size()) {
             seekBar.setProgress(0);
             int songId = AppGlobals.getsSongsIdsArray().get(nextSongIndex);
+            AppGlobals.setCurrentPlayingSong(songId);
             songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                     .get(songId));
             String url = AppGlobals.getStreamUrlsHashMap().
