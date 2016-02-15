@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.byteshaft.streamsound.fragments.PlayerFragment;
 import com.byteshaft.streamsound.fragments.PlayerListFragment;
+import com.byteshaft.streamsound.fragments.SocialMediaFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
@@ -38,7 +39,16 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return new PlayerListFragment();
+            switch (position) {
+                case 0:
+                    return new PlayerListFragment();
+                case 1:
+                    return new PlayerFragment();
+                case 2:
+                    return new SocialMediaFragment();
+                default:
+                    return new PlayerListFragment();
+            }
         }
 
         @Override
