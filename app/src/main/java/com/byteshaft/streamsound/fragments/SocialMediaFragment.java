@@ -1,5 +1,7 @@
 package com.byteshaft.streamsound.fragments;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -14,14 +16,14 @@ import com.byteshaft.streamsound.R;
 
 public class SocialMediaFragment extends Fragment implements View.OnClickListener {
 
-
     public static SocialMediaFragment getFragment() {
         SocialMediaFragment fragment = new SocialMediaFragment();
         return fragment;
     }
 
     private View mBaseView;
-    private WebView mWebView;
+    private static WebView mWebView;
+    private ProgressDialog progressDialog;
 
     /// urls
     private String facebookUrl = "https://m.facebook.com/shgr8rb";
@@ -35,8 +37,6 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
     private ImageButton buttonInstagram;
     private ImageButton buttonYouTube;
 
-    private boolean clicked = false ;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.social_media_fragment, container, false);
@@ -45,18 +45,27 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         buttonTwitter = (ImageButton) mBaseView.findViewById(R.id.twitter_button);
         buttonInstagram = (ImageButton) mBaseView.findViewById(R.id.instagram_button);
         buttonYouTube = (ImageButton) mBaseView.findViewById(R.id.youtube_button);
-
+        progressDialog = ProgressDialog.show(getActivity(), "", "Loading ...", true);
+        /// initializing social media buttons buttons
         buttonFacebook.setOnClickListener(this);
         buttonTwitter.setOnClickListener(this);
         buttonInstagram.setOnClickListener(this);
         buttonYouTube.setOnClickListener(this);
 
         mWebView = (WebView) mBaseView.findViewById(R.id.webView);
-        mWebView.setWebViewClient(new WebViewClient());
+        mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(facebookUrl);
         System.out.println("Social");
         return mBaseView;
+    }
+
+    public static boolean canGoBack(){
+        return mWebView.canGoBack();
+    }
+
+    public static void goBack(){
+        mWebView.goBack();
     }
 
     @Override
@@ -109,21 +118,18 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         button.setColorFilter(ContextCompat.getColor(getContext(), R.color.transparent));
     }
 
+    private class MyWebViewClient extends WebViewClient {
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//            switch (keyCode) {
-//                case KeyEvent.KEYCODE_BACK:
-//                    if (mWebView.canGoBack()) {
-//                        mWebView.goBack();
-//                    } else {
-//                        finish();
-//                    }
-//                    return true;
-//            }
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            progressDialog.dismiss();
+            super.onPageFinished(view, url);
+        }
 
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            progressDialog.show();
+            super.onPageStarted(view, url, favicon);
+        }
+    }
 }
