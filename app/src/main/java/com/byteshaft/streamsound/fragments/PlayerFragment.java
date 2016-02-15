@@ -27,14 +27,12 @@ public class PlayerFragment extends Fragment {
     }
 
     public static PlayerFragment getFragment() {
-        PlayerFragment fragment = new PlayerFragment();
-        return fragment;
+        return sInstance;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.player_fragment, container, false);
-        System.out.println("PlayerFragment");
         sInstance = this;
         time_progress = (TextView) mBaseView.findViewById(R.id.time_progress);
         seekBar = (SeekBar) mBaseView.findViewById(R.id.seekBar);

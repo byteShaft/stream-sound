@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    public static String POSITION = "POSITION";
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        mViewPager.setOffscreenPageLimit(3);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(getIconForEach(i));
         }
@@ -37,8 +40,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        PlayService.getInstance().stopSelf();
-        NotificationService.getsInstance().stopSelf();
+        if (PlayService.getInstance() != null) {
+            PlayService.getInstance().stopSelf();
+        }
+        if (NotificationService.getsInstance() != null) {
+            NotificationService.getsInstance().stopSelf();
+        }
     }
 
     @Override
@@ -63,6 +70,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mViewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -73,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            System.out.println(position);
             switch (position) {
                 case 0:
                     return new PlayerListFragment();
@@ -82,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                     return new SocialMediaFragment();
                 default:
-                    return null;
+                    return new SocialMediaFragment();
             }
         }
 
@@ -92,17 +110,17 @@ public class MainActivity extends AppCompatActivity {
             return 3;
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "List";
-                case 1:
-                    return "player";
-                case 2:
-                    return "Social";
-            }
-            return null;
-        }
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return "List";
+//                case 1:
+//                    return "player";
+//                case 2:
+//                    return "Social";
+//            }
+//            return null;
+//        }
     }
-}
+    }
