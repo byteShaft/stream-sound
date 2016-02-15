@@ -45,6 +45,15 @@ public class MainActivity extends AppCompatActivity {
         NotificationService.getsInstance().stopSelf();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (SocialMediaFragment.canGoBack()) {
+            SocialMediaFragment.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private int getIconForEach(int tabNum) {
         switch (tabNum) {
             case 0:
