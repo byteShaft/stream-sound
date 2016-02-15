@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.byteshaft.streamsound.fragments.PlayerFragment;
 import com.byteshaft.streamsound.fragments.PlayerListFragment;
@@ -18,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    public static String POSITION = "POSITION";
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +30,12 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(getIconForEach(i));
-        }
+        mViewPager.setOffscreenPageLimit(3);
+//        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+//            tabLayout.getTabAt(i).setIcon(getIconForEach(i));
+//        }
     }
 
     @Override
@@ -54,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mViewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -64,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            System.out.println(position);
+            Log.i("Positions", String.valueOf(position));
             switch (position) {
                 case 0:
                     return new PlayerListFragment();
@@ -73,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                     return new SocialMediaFragment();
                 default:
-                    return null;
+                    return new SocialMediaFragment();
             }
         }
 
