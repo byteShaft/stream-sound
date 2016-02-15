@@ -28,7 +28,6 @@ import android.widget.TextView;
 import com.byteshaft.streamsound.R;
 import com.byteshaft.streamsound.UpdateUiHelpers;
 import com.byteshaft.streamsound.adapter.SongsAdapter;
-import com.byteshaft.streamsound.service.NotificationService;
 import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
 import com.byteshaft.streamsound.utils.Constants;
@@ -73,9 +72,16 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         return sInstance;
     }
 
+
+    public static PlayerListFragment getFragment() {
+        PlayerListFragment fragment = new PlayerListFragment();
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.activity_main, container, false);
+        System.out.println("PlayerListFragment");
         sInstance = this;
         audioManager = (AudioManager) AppGlobals.getContext().getSystemService(Context.AUDIO_SERVICE);
         mListView = (ListView) mBaseView.findViewById(R.id.song_list);
@@ -186,6 +192,12 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         return mBaseView;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        System.out.println("OK");
+    }
+
     private void animateControlsDown() {
         Animation bottomDown = AnimationUtils.loadAnimation(getActivity().getApplicationContext(),
                 R.anim.bottom_down);
@@ -243,13 +255,6 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             AppGlobals.setControlsVisible(true);
         }
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        PlayService.getInstance().stopSelf();
-        NotificationService.getsInstance().stopSelf();
     }
 
     @Override

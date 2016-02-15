@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.byteshaft.streamsound.fragments.PlayerFragment;
 import com.byteshaft.streamsound.fragments.PlayerListFragment;
 import com.byteshaft.streamsound.fragments.SocialMediaFragment;
+import com.byteshaft.streamsound.service.NotificationService;
+import com.byteshaft.streamsound.service.PlayService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +29,29 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabLayout.getTabAt(i).setIcon(getIconForEach(i));
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        PlayService.getInstance().stopSelf();
+        NotificationService.getsInstance().stopSelf();
+    }
+
+    private int getIconForEach(int tabNum) {
+        switch (tabNum) {
+            case 0:
+                return R.drawable.play_list;
+            case 1:
+                return R.drawable.player;
+            case 2:
+                return R.drawable.social;
+            default:
+                return R.drawable.play_list;
+        }
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -39,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            System.out.println(position);
             switch (position) {
                 case 0:
                     return new PlayerListFragment();
@@ -47,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                     return new SocialMediaFragment();
                 default:
-                    return new PlayerListFragment();
+                    return null;
             }
         }
 
@@ -61,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "List";
                 case 1:
-                    return "SECTION 2";
+                    return "player";
                 case 2:
-                    return "SECTION 3";
+                    return "social";
             }
             return null;
         }
