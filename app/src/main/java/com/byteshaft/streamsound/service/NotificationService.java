@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -27,8 +26,6 @@ public class NotificationService extends Service {
         return sInstance;
     }
 
-
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -58,18 +55,17 @@ public class NotificationService extends Service {
             stopForeground(true);
             stopSelf();
         }
-        
+
         return START_NOT_STICKY;
     }
 
     public void showNotification() {
-// Using RemoteViews to bind custom layouts into Notification
+        // Using RemoteViews to bind custom layouts into Notification
         views = new RemoteViews(getPackageName(),
                 R.layout.status_bar);
         bigViews = new RemoteViews(getPackageName(),
                 R.layout.status_bar_expanded);
-
-// showing default album image
+        // showing default album image
         views.setViewVisibility(R.id.status_bar_icon, View.VISIBLE);
         views.setViewVisibility(R.id.status_bar_album_art, View.GONE);
         bigViews.setImageViewBitmap(R.id.status_bar_album_art, AppGlobals.getCurrentPlayingSongBitMap());
