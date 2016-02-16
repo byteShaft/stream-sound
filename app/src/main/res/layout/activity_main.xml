@@ -15,7 +15,7 @@
         android:id="@+id/now_playing_controls_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         android:clickable="false"
         android:layout_alignParentBottom="true"
         android:thumb="@drawable/transparent_drawable"
@@ -44,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/buffering"
+            android:clickable="false"
             android:layout_centerHorizontal="true" >
 
             <ImageButton
