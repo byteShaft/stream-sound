@@ -9,24 +9,37 @@
     android:background="@drawable/card_gridview_light"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <ImageView
+        android:id="@+id/imageArt"
+        android:layout_margin="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/imageArt">
+
     <SeekBar
         android:id="@+id/seekBar"
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:progress="0"
         android:thumb="@drawable/transparent_drawable"
-        android:indeterminate="false"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_centerInParent="true"
+        android:indeterminate="false"/>
     <TextView
         android:id="@+id/buffer"
         android:textColor="@color/white"
-        android:layout_below="@id/nowPlayingSeekBar"
         android:textSize="12sp"
-        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/time_progress"
+        android:layout_centerHorizontal="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -89,11 +102,13 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:id="@+id/time_progress"
+        android:layout_marginRight="10dp"
         android:textColor="@color/white"
         android:layout_below="@+id/seekBar"
         android:layout_alignLeft="@+id/seekBar"
         android:layout_alignStart="@+id/seekBar"
         android:layout_marginLeft="41dp"
         android:layout_marginStart="41dp" />
+    </RelativeLayout>
 
 </RelativeLayout>
