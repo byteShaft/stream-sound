@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:longClickable="true"
         android:clickable="false"
         android:layout_alignParentBottom="true"
         android:thumb="@drawable/transparent_drawable"
@@ -107,6 +108,7 @@
             android:layout_alignStart="@+id/nowPlayingSeekBar"
             android:layout_marginLeft="41dp"
             android:layout_marginStart="41dp" />
-
+        
     </RelativeLayout>
+
 </RelativeLayout>
