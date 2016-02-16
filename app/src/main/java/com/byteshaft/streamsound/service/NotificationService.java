@@ -136,7 +136,7 @@ public class NotificationService extends Service {
         status.contentView = views;
         status.bigContentView = bigViews;
         status.flags = Notification.FLAG_AUTO_CANCEL;
-        status.icon = R.drawable.ic_launcher;
+        status.icon = R.drawable.short_notification;
         status.contentIntent = pendingIntent;
         startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, status);
     }

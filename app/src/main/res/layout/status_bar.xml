@@ -8,11 +8,13 @@
 
     <ImageView
         android:id="@+id/status_bar_icon"
+        android:padding="2dp"
+        android:layout_margin="2dp"
         android:layout_width="@dimen/status_bar_album_art"
         android:layout_height="@dimen/status_bar_album_art"
-        android:background="@drawable/ic_launcher"
-        android:src="@drawable/ic_launcher"
-        android:scaleType="center"
+        android:background="@drawable/short_notification"
+        android:layout_centerVertical="true"
+        android:scaleType="fitCenter"
         android:visibility="gone" />
 
     <LinearLayout
