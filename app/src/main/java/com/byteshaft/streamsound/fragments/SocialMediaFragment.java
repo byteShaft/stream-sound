@@ -1,6 +1,5 @@
 package com.byteshaft.streamsound.fragments;
 
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,20 +10,16 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import com.byteshaft.streamsound.R;
+import com.byteshaft.streamsound.utils.AppGlobals;
 
 public class SocialMediaFragment extends Fragment implements View.OnClickListener {
 
     private View mBaseView;
     private static WebView mWebView;
-    private ProgressDialog progressDialog;
-
-    /// urls
-    private String facebookUrl = "https://m.facebook.com/codercast";
-    private String twitterUrl = "https://m.twitter.com/codercast";
-    private String youtubeUrl = "https://m.youtube.com/channel/UCOWJExrlKckmB9lJQGDG3BQ?app=desktop";
-    private String instagramUrl = "https://www.instagram.com/codercast";
+    ProgressBar progressBar;
 
     // buttons
     private ImageButton buttonFacebook;
@@ -32,15 +27,23 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
     private ImageButton buttonInstagram;
     private ImageButton buttonYouTube;
 
+    private static SocialMediaFragment sInstance;
+
+    public static SocialMediaFragment getInstance() {
+        return sInstance;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBaseView = inflater.inflate(R.layout.social_media_fragment, container, false);
+        sInstance = this;
 
         buttonFacebook = (ImageButton) mBaseView.findViewById(R.id.fb_button);
         buttonTwitter = (ImageButton) mBaseView.findViewById(R.id.twitter_button);
         buttonInstagram = (ImageButton) mBaseView.findViewById(R.id.instagram_button);
         buttonYouTube = (ImageButton) mBaseView.findViewById(R.id.youtube_button);
-        progressDialog = ProgressDialog.show(getActivity(), "", "Loading ...", true);
+        progressBar = (ProgressBar) mBaseView.findViewById(R.id.progressBar);
+
         /// initializing social media buttons buttons
         buttonFacebook.setOnClickListener(this);
         buttonTwitter.setOnClickListener(this);
@@ -50,7 +53,7 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         mWebView = (WebView) mBaseView.findViewById(R.id.webView);
         mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.loadUrl(facebookUrl);
+        mWebView.loadUrl(AppGlobals.facebookUrl);
         buttonFacebook.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         System.out.println("Social");
         return mBaseView;
@@ -70,19 +73,19 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.fb_button:
                 selected = 0;
-                    mWebView.loadUrl(facebookUrl);
+                    mWebView.loadUrl(AppGlobals.facebookUrl);
                 break;
             case R.id.twitter_button:
                 selected = 1;
-                mWebView.loadUrl(twitterUrl);
+                mWebView.loadUrl(AppGlobals.twitterUrl);
                 break;
             case R.id.youtube_button:
                 selected = 2;
-                mWebView.loadUrl(youtubeUrl);
+                mWebView.loadUrl(AppGlobals.youtubeUrl);
                 break;
             case R.id.instagram_button:
                 selected = 3;
-                mWebView.loadUrl(instagramUrl);
+                mWebView.loadUrl(AppGlobals.instagramUrl);
                 break;
 
         }
@@ -118,13 +121,15 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            progressDialog.dismiss();
+            progressBar.setVisibility(View.GONE);
+            mWebView.setVisibility(View.VISIBLE);
             super.onPageFinished(view, url);
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            progressDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
+            mWebView.setVisibility(View.GONE);
             super.onPageStarted(view, url, favicon);
         }
     }
