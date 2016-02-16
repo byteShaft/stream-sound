@@ -51,6 +51,8 @@ public class SongsAdapter extends ArrayAdapter {
             Picasso.with(mActivity).cancelRequest(holder.thumbNail);
             Picasso.with(mActivity).load(AppGlobals.getSongImageUrlHashMap()
                     .get(songsList.get(position))).into(holder.thumbNail);
+        } else {
+            holder.thumbNail.setImageResource(R.drawable.default_song);
         }
         if (AppGlobals.getSongArtistHashMap().containsKey(songsList.get(position))) {
             holder.artist.setText(AppGlobals.getSongArtistHashMap().get(songsList.get(position)));

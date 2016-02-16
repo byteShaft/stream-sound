@@ -37,6 +37,8 @@ public class AppGlobals extends Application {
     public static final String KEY_ID = "user";
     private static String nextUrl = "";
     private static Bitmap imageBitMap = null;
+    private static boolean sChangeFromLayout = false;
+    private static boolean sChangeFromPlayer = false;
 
     @Override
     public void onCreate() {
@@ -154,6 +156,22 @@ public class AppGlobals extends Application {
 
     public static Bitmap getCurrentPlayingSongBitMap() {
         return imageBitMap;
+    }
+
+    public static void setChangeFromLayout(boolean value) {
+        sChangeFromLayout = value;
+    }
+
+    public static boolean isChangeFromLayout() {
+        return sChangeFromLayout;
+    }
+
+    public static void setChangeFromPlayer(boolean value) {
+        sChangeFromPlayer = value;
+    }
+
+    public static boolean isChangeFromPlayer() {
+        return sChangeFromPlayer;
     }
 
 }

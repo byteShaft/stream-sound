@@ -104,6 +104,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if (seek) {
+                    AppGlobals.setChangeFromLayout(true);
                     PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
                     PlayService.sMediaPlayer.start();
                 }
@@ -186,7 +187,6 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     @Override
     public void onPause() {
         super.onPause();
-        System.out.println("OK");
     }
 
     private void animateControlsDown() {
@@ -201,8 +201,12 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         AppGlobals.setCurrentPlayingSongBitMap(null);
         new DownloadBitmap().execute();
         if (PlayService.sMediaPlayer != null) {
-            PlayService.sMediaPlayer.stop();
-            PlayService.sMediaPlayer.reset();
+            try {
+                PlayService.sMediaPlayer.stop();
+                PlayService.sMediaPlayer.reset();
+            } catch (Exception e) {
+                Log.i("LOGTAG", "messing with mediaplayer");
+            }
             PlayService.updateHandler.removeCallbacks(PlayService.timerRunnable);
         }
         songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
@@ -223,7 +227,6 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     }
 
     public void animateBottomUp() {
-        System.out.println(AppGlobals.getControlsVisibility());
         if (!AppGlobals.getControlsVisibility()) {
             Animation bottomUp = AnimationUtils.loadAnimation(getActivity(),
                     R.anim.bottom_up);
@@ -238,13 +241,19 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.play_pause_button:
-                PlayService.togglePlayPause();
+                if (PlayService.sMediaPlayer != null) {
+                    PlayService.togglePlayPause();
+                }
                 break;
             case R.id.next_button:
-                nextSong();
+                if (PlayService.sMediaPlayer != null) {
+                    nextSong();
+                }
                 break;
             case R.id.previous_button:
-                previousSong();
+                if (PlayService.sMediaPlayer != null) {
+                    previousSong();
+                }
                 break;
         }
     }
@@ -266,11 +275,8 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     }
 
     public void nextSong() {
-        System.out.println(AppGlobals.getsSongsIdsArray()
-                .indexOf(AppGlobals.getCurrentPlayingSong()));
         int nextSongIndex = (AppGlobals.getsSongsIdsArray()
                 .indexOf(AppGlobals.getCurrentPlayingSong())) + 1;
-        System.out.println(nextSongIndex);
         if (nextSongIndex < AppGlobals.getsSongsIdsArray().size()) {
             seekBar.setProgress(0);
             int songId = AppGlobals.getsSongsIdsArray().get(nextSongIndex);
@@ -454,6 +460,8 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             Bitmap myBitmap;
             String url = AppGlobals.getSongImageUrlHashMap()
                     .get(AppGlobals.getCurrentPlayingSong());
+            Log.e("TAG", AppGlobals.getSongImageUrlHashMap().toString());
+            Log.e("TAG", String.valueOf(AppGlobals.getCurrentPlayingSong()));
             myBitmap = Helpers.downloadImage(url);
             if (myBitmap != null) {
                 AppGlobals.setCurrentPlayingSongBitMap(myBitmap);
@@ -470,7 +478,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             if (AppGlobals.getCurrentPlayingSongBitMap() != null) {
                 PlayerFragment.getsInstance().imageArt.setImageBitmap(AppGlobals.getCurrentPlayingSongBitMap());
             } else {
-                PlayerFragment.getsInstance().imageArt.setImageResource(R.drawable.ic_launcher);
+                PlayerFragment.getsInstance().imageArt.setImageResource(R.drawable.default_song);
             }
         }
     }

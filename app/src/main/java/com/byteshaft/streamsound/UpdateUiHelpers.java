@@ -62,24 +62,39 @@ public class UpdateUiHelpers extends ContextWrapper{
         PlayerListFragment playerListFragment = com.byteshaft.streamsound.fragments.
                 PlayerListFragment.getInstance();
         PlayerFragment fragment = com.byteshaft.streamsound.fragments.PlayerFragment.getsInstance();
-        if (playerListFragment != null) {
-            int progressValue = playerListFragment.seekBar.getProgress();
+        int progressValue = playerListFragment.seekBar.getProgress();
+        int playerProgress = fragment.seekBar.getProgress();
+        if (AppGlobals.isChangeFromLayout()) {
             playerListFragment.seekBar.setProgress(progressValue
                     + (playerListFragment.updateValue / 2));
             playerListFragment.timeTextView.setText(secondToMinutes(progressValue
                     + (playerListFragment.updateValue / 2)));
-        }
-
-        if (fragment != null) {
-            int progressValue = fragment.seekBar.getProgress();
-            System.out.println(progressValue);
             fragment.seekBar.setProgress(progressValue
                     + (playerListFragment.updateValue / 2));
             fragment.time_progress.setText(secondToMinutes(progressValue
                     + (playerListFragment.updateValue / 2)));
+            AppGlobals.setChangeFromLayout(false);
+        } else if (AppGlobals.isChangeFromPlayer()) {
+            playerListFragment.seekBar.setProgress(playerProgress
+                    + (playerListFragment.updateValue / 2));
+            playerListFragment.timeTextView.setText(secondToMinutes(playerProgress
+                    + (playerListFragment.updateValue / 2)));
+            fragment.seekBar.setProgress(playerProgress
+                    + (playerListFragment.updateValue / 2));
+            fragment.time_progress.setText(secondToMinutes(playerProgress
+                    + (playerListFragment.updateValue / 2)));
+            AppGlobals.setChangeFromPlayer(false);
+        } else {
+            playerListFragment.seekBar.setProgress(progressValue
+                    + (playerListFragment.updateValue / 2));
+            playerListFragment.timeTextView.setText(secondToMinutes(progressValue
+                    + (playerListFragment.updateValue / 2)));
+            fragment.seekBar.setProgress(playerProgress
+                    + (playerListFragment.updateValue / 2));
+            fragment.time_progress.setText(secondToMinutes(playerProgress
+                    + (playerListFragment.updateValue / 2)));
+
         }
-        
-        
     }
 
     private static String secondToMinutes(int second) {
