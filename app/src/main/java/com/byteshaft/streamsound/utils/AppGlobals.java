@@ -18,6 +18,13 @@ public class AppGlobals extends Application {
     private static HashMap<Integer, String> sSongImageUrls;
     private static HashMap<Integer, String > sArtistHashMap;
 
+
+    /// urls
+    public static String facebookUrl = "https://m.facebook.com/codercast";
+    public static String twitterUrl = "https://m.twitter.com/codercast";
+    public static String youtubeUrl = "https://m.youtube.com/channel/UCOWJExrlKckmB9lJQGDG3BQ?app=mobile";
+    public static String instagramUrl = "https://www.instagram.com/codercast";
+
     private static Context sContext;
     public static final String CLIENT_KEY = "d15e89ac63aed800d452231a67207696";
     public static final String ADD_CLIENT_ID = "?client_id=";
