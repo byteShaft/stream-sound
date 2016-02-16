@@ -91,13 +91,19 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.play_pause:
-                PlayService.togglePlayPause();
+                if (PlayService.sMediaPlayer != null) {
+                    PlayService.togglePlayPause();
+                }
                 break;
             case R.id.next:
-                PlayerListFragment.getInstance().nextSong();
+                if (PlayService.sMediaPlayer != null) {
+                    PlayerListFragment.getInstance().nextSong();
+                }
                 break;
             case R.id.previous:
-                PlayerListFragment.getInstance().previousSong();
+                if (PlayService.sMediaPlayer != null) {
+                    PlayerListFragment.getInstance().previousSong();
+                }
                 break;
         }
 

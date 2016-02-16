@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 
 import com.byteshaft.streamsound.UpdateUiHelpers;
+import com.byteshaft.streamsound.fragments.PlayerListFragment;
 import com.byteshaft.streamsound.utils.AppGlobals;
 import com.byteshaft.streamsound.utils.Constants;
 import com.byteshaft.streamsound.utils.CustomMediaPlayer;
@@ -56,6 +57,7 @@ public class PlayService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 UpdateUiHelpers.updateUiOnCompletion();
+                PlayerListFragment.getInstance().nextSong();
             }
         });
         timerRunnable = new Runnable() {
