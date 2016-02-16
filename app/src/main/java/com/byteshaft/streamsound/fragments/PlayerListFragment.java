@@ -78,6 +78,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         mListView = (ListView) mBaseView.findViewById(R.id.song_list);
         mListView.setSmoothScrollbarEnabled(true);
         controls_layout = (RelativeLayout) mBaseView.findViewById(R.id.now_playing_controls_header);
+        controls_layout.setClickable(false);
         /// Media Controls
         mPlayerControl = (ImageView) mBaseView.findViewById(R.id.play_pause_button);
         buttonNext = (ImageView) mBaseView.findViewById(R.id.next_button);
