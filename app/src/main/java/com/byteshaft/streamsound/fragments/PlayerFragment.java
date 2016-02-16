@@ -14,6 +14,8 @@ import com.byteshaft.streamsound.R;
 import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
 
+import java.util.concurrent.TimeUnit;
+
 public class PlayerFragment extends Fragment implements View.OnClickListener {
 
     private View mBaseView;
@@ -23,7 +25,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public ImageButton next;
     public ImageButton play_pause;
     public TextView time_progress;
-    private ImageView imageArt;
+    public ImageView imageArt;
     private static PlayerFragment sInstance;
 
     public static PlayerFragment getsInstance() {
@@ -40,7 +42,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         previous = (ImageButton) mBaseView.findViewById(R.id.previous);
         next = (ImageButton) mBaseView.findViewById(R.id.next);
         play_pause = (ImageButton) mBaseView.findViewById(R.id.play_pause);
-//        imageArt = (ImageView) mBaseView.findViewById(R.id.imageArt);
+        imageArt = (ImageView) mBaseView.findViewById(R.id.imageArt);
         play_pause.setOnClickListener(this);
         next.setOnClickListener(this);
         previous.setOnClickListener(this);
@@ -50,9 +52,39 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        System.out.println(AppGlobals.getCurrentPlayingSongBitMap() == null);
-//        imageArt.setImageBitmap(AppGlobals.getCurrentPlayingSongBitMap());
+        if (AppGlobals.getCurrentPlayingSongBitMap() != null) {
+            imageArt.setImageBitmap(AppGlobals.getCurrentPlayingSongBitMap());
+        }
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            boolean seek = false;
 
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seek = fromUser;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (seek) {
+                    PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
+                    PlayService.sMediaPlayer.start();
+                }
+            }
+        });
+        if (AppGlobals.getCurrentPlayingSongBitMap() != null) {
+            imageArt.setImageBitmap(AppGlobals.getCurrentPlayingSongBitMap());
+        } else {
+            imageArt.setImageResource(R.drawable.ic_launcher);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override

@@ -2,9 +2,12 @@ package com.byteshaft.streamsound.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -104,6 +107,26 @@ public class Helpers {
     public static void userId(String value) {
         SharedPreferences sharedPreferences = getPreferenceManager();
         sharedPreferences.edit().putString(AppGlobals.KEY_ID, value).commit();
+    }
+
+    public static Bitmap downloadImage(String link) {
+        Bitmap myBitmap = null;
+        try {
+            URL url = new URL(link);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            try {
+                InputStream input = connection.getInputStream();
+                myBitmap = BitmapFactory.decodeStream(input);
+
+            } catch (Exception e) {
+                e.fillInStackTrace();
+                Log.v("ERROR", "Errorchence : " + e);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return myBitmap;
     }
 
 }
