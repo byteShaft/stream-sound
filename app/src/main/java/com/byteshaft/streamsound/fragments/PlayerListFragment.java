@@ -208,10 +208,12 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
         updateValue = songLengthInSeconds / 100;
         seekBar.setMax(songLengthInSeconds);
-        PlayerFragment fragment = PlayerFragment.getsInstance();
-        fragment.seekBar.setMax(songLengthInSeconds);
+        PlayerFragment.getsInstance().seekBar.setMax(songLengthInSeconds);
         seekBar.setProgress(0);
-        animateBottomUp();
+        PlayerFragment.getsInstance().seekBar.setProgress(0);
+        if (!AppGlobals.getControlsVisibility()) {
+            animateBottomUp();
+        }
         UpdateUiHelpers.setSeekBarIndeterminate();
         AppGlobals.setSongCompleteStatus(false);
         Intent intent = new Intent(getActivity().getApplicationContext(), PlayService.class);

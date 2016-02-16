@@ -72,6 +72,7 @@ public class UpdateUiHelpers extends ContextWrapper{
 
         if (fragment != null) {
             int progressValue = fragment.seekBar.getProgress();
+            System.out.println(progressValue);
             fragment.seekBar.setProgress(progressValue
                     + (playerListFragment.updateValue / 2));
             fragment.time_progress.setText(secondToMinutes(progressValue
