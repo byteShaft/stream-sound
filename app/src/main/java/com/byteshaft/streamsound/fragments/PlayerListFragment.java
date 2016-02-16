@@ -104,6 +104,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if (seek) {
+                    AppGlobals.setChangeFromLayout(true);
                     PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
                     PlayService.sMediaPlayer.start();
                 }
