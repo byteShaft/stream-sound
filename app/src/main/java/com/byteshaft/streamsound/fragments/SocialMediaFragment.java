@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
@@ -53,6 +54,8 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         mWebView = (WebView) mBaseView.findViewById(R.id.webView);
         mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         mWebView.loadUrl(AppGlobals.facebookUrl);
         buttonFacebook.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         System.out.println("Social");
