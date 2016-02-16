@@ -21,10 +21,10 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
     private ProgressDialog progressDialog;
 
     /// urls
-    private String facebookUrl = "https://m.facebook.com/shgr8rb";
-    private String twitterUrl = "https://m.twitter.com/shgr8rb";
-    private String youtubeUrl = "https://m.youtube.com/user/shgr8rb";
-    private String instagramUrl = "https://www.instagram.com/shgr8rb";
+    private String facebookUrl = "https://m.facebook.com/codercast";
+    private String twitterUrl = "https://m.twitter.com/codercast";
+    private String youtubeUrl = "https://m.youtube.com/channel/UCOWJExrlKckmB9lJQGDG3BQ?app=desktop";
+    private String instagramUrl = "https://www.instagram.com/codercast";
 
     // buttons
     private ImageButton buttonFacebook;
@@ -51,6 +51,7 @@ public class SocialMediaFragment extends Fragment implements View.OnClickListene
         mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(facebookUrl);
+        buttonFacebook.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         System.out.println("Social");
         return mBaseView;
     }
