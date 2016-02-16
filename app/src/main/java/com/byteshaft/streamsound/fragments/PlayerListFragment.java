@@ -4,8 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,7 +34,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -72,10 +69,6 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         return sInstance;
     }
 
-
-    public static PlayerListFragment getFragment() {
-        return sInstance;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -205,26 +198,33 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     }
 
     private void playSong(String formattedUrl) {
-        Picasso.with(getActivity()).load(AppGlobals.getSongImageUrlHashMap()
-                .get(AppGlobals.getCurrentPlayingSong())).into(new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                AppGlobals.setCurrentPlayingSongBitMap(bitmap);
-
-
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                System.out.println(errorDrawable.getState());
-
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-            }
-        });
+        System.out.println(AppGlobals.getSongImageUrlHashMap()
+                .get(AppGlobals.getCurrentPlayingSong()));
+        try {
+            Picasso.with(getContext()).load(AppGlobals.getSongImageUrlHashMap()
+                    .get(AppGlobals.getCurrentPlayingSong())).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//                .into(new Target() {
+//            @Override
+//            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                AppGlobals.setCurrentPlayingSongBitMap(bitmap);
+//                Log.i("BITMAP", "BitMap Downloaded");
+//
+//            }
+//
+//            @Override
+//            public void onBitmapFailed(Drawable errorDrawable) {
+//                System.out.println(errorDrawable.getState());
+//
+//            }
+//
+//            @Override
+//            public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//            }
+//        });
         if (PlayService.sMediaPlayer != null) {
             PlayService.sMediaPlayer.stop();
             PlayService.sMediaPlayer.reset();
@@ -233,6 +233,8 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         songLengthInSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(songLength);
         updateValue = songLengthInSeconds / 100;
         seekBar.setMax(songLengthInSeconds);
+        PlayerFragment fragment = PlayerFragment.getsInstance();
+        fragment.seekBar.setMax(songLengthInSeconds);
         seekBar.setProgress(0);
         animateBottomUp();
         UpdateUiHelpers.setSeekBarIndeterminate();

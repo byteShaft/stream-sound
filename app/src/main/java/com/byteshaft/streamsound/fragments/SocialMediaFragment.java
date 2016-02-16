@@ -16,11 +16,6 @@ import com.byteshaft.streamsound.R;
 
 public class SocialMediaFragment extends Fragment implements View.OnClickListener {
 
-    public static SocialMediaFragment getFragment() {
-        SocialMediaFragment fragment = new SocialMediaFragment();
-        return fragment;
-    }
-
     private View mBaseView;
     private static WebView mWebView;
     private ProgressDialog progressDialog;
