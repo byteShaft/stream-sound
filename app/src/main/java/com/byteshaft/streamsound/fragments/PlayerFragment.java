@@ -52,9 +52,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (AppGlobals.getCurrentPlayingSongBitMap() != null) {
-            imageArt.setImageBitmap(AppGlobals.getCurrentPlayingSongBitMap());
-        }
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             boolean seek = false;
 
@@ -79,7 +76,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         if (AppGlobals.getCurrentPlayingSongBitMap() != null) {
             imageArt.setImageBitmap(AppGlobals.getCurrentPlayingSongBitMap());
         } else {
-            imageArt.setImageResource(R.drawable.ic_launcher);
+            imageArt.setImageResource(R.drawable.default_song);
         }
     }
 
