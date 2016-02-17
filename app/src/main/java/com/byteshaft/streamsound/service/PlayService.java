@@ -31,7 +31,7 @@ public class PlayService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Intent notificationIntent = new Intent(AppGlobals.getContext(), NotificationService.class);
         notificationIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
-        AppGlobals.getContext().startService(notificationIntent);
+        startService(notificationIntent);
         sInstance = this;
         String url = intent.getStringExtra(AppGlobals.SOUND_URL);
         sMediaPlayer = new CustomMediaPlayer();

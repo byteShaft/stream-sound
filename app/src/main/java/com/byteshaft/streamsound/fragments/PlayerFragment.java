@@ -1,5 +1,6 @@
 package com.byteshaft.streamsound.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,8 +12,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.byteshaft.streamsound.R;
+import com.byteshaft.streamsound.service.NotificationService;
 import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
+import com.byteshaft.streamsound.utils.Constants;
 
 import java.util.concurrent.TimeUnit;
 
@@ -66,7 +69,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (seek) {
+                if (seek && PlayService.sMediaPlayer != null && PlayService.sMediaPlayer.isPlaying()) {
                     AppGlobals.setChangeFromPlayer(true);
                     PlayService.sMediaPlayer.seekTo((int) TimeUnit.SECONDS.toMillis(seekBar.getProgress()));
                     PlayService.sMediaPlayer.start();
@@ -91,6 +94,22 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
             case R.id.play_pause:
                 if (PlayService.sMediaPlayer != null) {
                     PlayService.togglePlayPause();
+                    if (!AppGlobals.isNotificationVisible()) {
+                        Intent notificationIntent = new Intent(AppGlobals.getContext(), NotificationService.class);
+                        notificationIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+                        getActivity().startService(notificationIntent);
+                    }
+                }
+                if (!AppGlobals.isRunningFromList() && !AppGlobals.isRunningFirstSong()) {
+                    AppGlobals.setRunningFirstSong(true);
+                    String url = AppGlobals.getStreamUrlsHashMap().
+                            get(AppGlobals.getsSongsIdsArray().get(0));
+                    String formattedUrl = String.format("%s%s%s", url,
+                            AppGlobals.ADD_CLIENT_ID, AppGlobals.CLIENT_KEY);
+                    AppGlobals.setCurrentPlayingSong(AppGlobals.getsSongsIdsArray().get(0));
+                    PlayerListFragment.getInstance().songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
+                            .get(AppGlobals.getsSongsIdsArray().get(0)));
+                    PlayerListFragment.getInstance().playSong(formattedUrl);
                 }
                 break;
             case R.id.next:

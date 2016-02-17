@@ -9,7 +9,19 @@ import java.util.HashMap;
 
 public class AppGlobals extends Application {
 
+    // Chnages you should do here.
     public static String USER_NAME = "pti-social-media";
+    /// urls
+    // channel id for youtube will be like example https://www.youtube.com/channel/UCF0pVplsI8R5kcAqgtoRqoA
+    // the channelid will be  after /channel/
+    public static String facebookUrl = "https://m.facebook.com/YOUR_USERNAME";
+    public static String twitterUrl = "https://m.twitter.com/YOUR_USERNAME";
+    public static String youtubeUrl = "https://m.youtube.com/channel/Channel_Id?app=mobile";
+    public static String instagramUrl = "https://www.instagram.com/YOUR_USERNAME";
+    // the soundcloud app client id
+    // you can create new id here http://soundcloud.com/you/apps/new
+    public static final String CLIENT_KEY = "d15e89ac63aed800d452231a67207696";
+
     private static ArrayList<Integer> sSongsIdsArray;
     private static HashMap<Integer, String> sSongsTitleHashMap;
     private static HashMap<Integer, String> sStreamUrls;
@@ -18,15 +30,7 @@ public class AppGlobals extends Application {
     private static HashMap<Integer, String> sSongImageUrls;
     private static HashMap<Integer, String > sArtistHashMap;
 
-
-    /// urls
-    public static String facebookUrl = "https://m.facebook.com/codercast";
-    public static String twitterUrl = "https://m.twitter.com/codercast";
-    public static String youtubeUrl = "https://m.youtube.com/channel/UCOWJExrlKckmB9lJQGDG3BQ?app=mobile";
-    public static String instagramUrl = "https://www.instagram.com/codercast";
-
     private static Context sContext;
-    public static final String CLIENT_KEY = "d15e89ac63aed800d452231a67207696";
     public static final String ADD_CLIENT_ID = "?client_id=";
     public static final String SOUND_URL = "sound_url";
     private static boolean sControlsVisible = false;
@@ -39,6 +43,9 @@ public class AppGlobals extends Application {
     private static Bitmap imageBitMap = null;
     private static boolean sChangeFromLayout = false;
     private static boolean sChangeFromPlayer = false;
+    private static boolean sRunningFromList = false;
+    private static boolean sRunningFirstSong = false;
+    private static boolean sNotificationVisibitlity = false;
 
     @Override
     public void onCreate() {
@@ -172,6 +179,30 @@ public class AppGlobals extends Application {
 
     public static boolean isChangeFromPlayer() {
         return sChangeFromPlayer;
+    }
+
+    public static void setRunningFromList(boolean status) {
+        sRunningFromList = status;
+    }
+
+    public static boolean isRunningFromList() {
+        return sRunningFromList;
+    }
+
+    public static void setRunningFirstSong(boolean status) {
+        sRunningFirstSong = status;
+    }
+
+    public static boolean isRunningFirstSong() {
+        return sRunningFirstSong;
+    }
+
+    public static void setNotificationVisibility(boolean visibility) {
+        sNotificationVisibitlity = visibility;
+    }
+
+    public static boolean isNotificationVisible() {
+        return sNotificationVisibitlity;
     }
 
 }

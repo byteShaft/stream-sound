@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.byteshaft.streamsound.R;
 import com.byteshaft.streamsound.UpdateUiHelpers;
 import com.byteshaft.streamsound.adapter.SongsAdapter;
+import com.byteshaft.streamsound.service.NotificationService;
 import com.byteshaft.streamsound.service.PlayService;
 import com.byteshaft.streamsound.utils.AppGlobals;
 import com.byteshaft.streamsound.utils.Constants;
@@ -49,7 +50,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
     private ImageView buttonPrevious;
     public RelativeLayout controls_layout;
     public SeekBar seekBar;
-    private int songLength;
+    public int songLength;
     public int updateValue;
     private int songLengthInSeconds;
     public TextView bufferingTextView;
@@ -178,6 +179,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
                 AppGlobals.setCurrentPlayingSong((Integer) parent.getItemAtPosition(position));
                 songLength = Integer.valueOf(AppGlobals.getDurationHashMap()
                         .get(Integer.valueOf(String.valueOf(parent.getItemAtPosition(position)))));
+                AppGlobals.setRunningFromList(true);
                 playSong(formattedUrl);
             }
         });
@@ -198,7 +200,7 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
         AppGlobals.setControlsVisible(false);
     }
 
-    private void playSong(String formattedUrl) {
+    public void playSong(String formattedUrl) {
         AppGlobals.setCurrentPlayingSongBitMap(null);
         new DownloadBitmap().execute();
         if (PlayService.sMediaPlayer != null) {
@@ -244,6 +246,11 @@ public class PlayerListFragment extends Fragment implements View.OnClickListener
             case R.id.play_pause_button:
                 if (PlayService.sMediaPlayer != null) {
                     PlayService.togglePlayPause();
+                }
+                if (!AppGlobals.isNotificationVisible()) {
+                    Intent notificationIntent = new Intent(AppGlobals.getContext(), NotificationService.class);
+                    notificationIntent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+                    getActivity().startService(notificationIntent);
                 }
                 break;
             case R.id.next_button:
