@@ -54,6 +54,7 @@ public class NotificationService extends Service {
             Log.i(LOG_TAG, "Received Stop Foreground Intent");
             stopForeground(true);
             stopSelf();
+            PlayService.sMediaPlayer.pause();
         }
 
         return START_NOT_STICKY;
