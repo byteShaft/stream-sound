@@ -53,7 +53,11 @@ public class MainActivity extends AppCompatActivity {
         if (SocialMediaFragment.canGoBack()) {
             SocialMediaFragment.goBack();
         } else {
-            super.onBackPressed();
+            if (mViewPager.getCurrentItem() == 0) {
+                super.onBackPressed();
+            } else {
+                mViewPager.setCurrentItem(0);
+            }
         }
     }
 
