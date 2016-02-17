@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_img">
+    android:layout_height="match_parent" >
 
-    <ListView
-        android:id="@+id/song_list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:listSelector="@drawable/list_item_selector">
-    </ListView>
+        <ListView
+            android:id="@+id/song_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@drawable/list_item_selector">
+        </ListView>
 
     <RelativeLayout
         android:id="@+id/now_playing_controls_header"
@@ -27,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:progress="0"
-            android:thumb="@drawable/transparent_drawable"
             android:indeterminate="false"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
