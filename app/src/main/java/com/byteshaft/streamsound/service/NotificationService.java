@@ -36,7 +36,7 @@ public class NotificationService extends Service {
         sInstance = this;
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
             showNotification();
-
+            AppGlobals.setNotificationVisibility(true);
         } else if (intent.getAction().equals(Constants.ACTION.PREV_ACTION)) {
             Log.i(LOG_TAG, "Clicked Previous");
             com.byteshaft.streamsound.fragments.PlayerListFragment.getInstance().previousSong();
@@ -55,6 +55,7 @@ public class NotificationService extends Service {
             stopForeground(true);
             stopSelf();
             PlayService.sMediaPlayer.pause();
+            AppGlobals.setNotificationVisibility(false);
         }
 
         return START_NOT_STICKY;
